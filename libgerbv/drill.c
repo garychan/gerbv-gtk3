@@ -54,7 +54,6 @@
 #include <unistd.h>
 #endif
 
-#include "attribute.h"
 #include "common.h"
 #include "gerbv.h"
 #include "drill.h"

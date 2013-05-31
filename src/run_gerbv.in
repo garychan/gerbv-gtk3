@@ -76,7 +76,7 @@ done
 #
 # This hack came from wcalc.
 
-LIBGERBV_DIR=@BUILDDIR@/.libs
+LIBGERBV_DIR=@BUILDDIR@/../libgerbv/.libs
 if test "X${LD_LIBRARY_PATH}" = "X" ; then
 	LD_LIBRARY_PATH=${LIBGERBV_DIR}
 else

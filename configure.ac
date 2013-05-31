@@ -23,7 +23,7 @@ dnl  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA
 
 
 AC_INIT([gerbv], [2.6A])
-AC_CONFIG_SRCDIR([src/gerbv.c])
+AC_CONFIG_SRCDIR([libgerbv/gerbv.c])
 AC_PREREQ([2.59])
 AM_INIT_AUTOMAKE([1.9])
 
@@ -386,8 +386,9 @@ AC_OUTPUT(	Makefile \
 		example/Makefile \
 		man/Makefile \
 		scheme/Makefile \
+		libgerbv/Makefile \
+		libgerbv/libgerbv.pc \
 		src/Makefile \
-		src/libgerbv.pc \
 		win32/Makefile \
 		test/Makefile \
 		test/golden/Makefile \
