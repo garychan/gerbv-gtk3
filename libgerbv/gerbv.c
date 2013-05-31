@@ -53,10 +53,6 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkkeysyms.h>
 
-#ifdef HAVE_GETOPT_H
-  #include <getopt.h>
-#endif
-
 #include <pango/pango.h>
 
 #include <locale.h>
