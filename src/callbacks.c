@@ -2161,32 +2161,50 @@ callbacks_show_color_picker_dialog (gint index){
 	screen.win.colorSelectionDialog = NULL;
 	GtkColorSelectionDialog *cs= (GtkColorSelectionDialog *) gtk_color_selection_dialog_new ("Select a color");
 	GtkColorSelection *colorsel = (GtkColorSelection *) cs->colorsel;
+
+	GdkColor color = { 0, };
 	
 	screen.win.colorSelectionDialog = (GtkWidget *) cs;
 	screen.win.colorSelectionIndex = index;
-	if (index >= 0)
-		gtk_color_selection_set_current_color (colorsel, &mainProject->file[index]->color);
-	else
-		gtk_color_selection_set_current_color (colorsel, &mainProject->background);
+	if (index >= 0) {
+		color.red = (guint16) (mainProject->file[index]->color.red * 65535);
+		color.green = (guint16) (mainProject->file[index]->color.green * 65535);
+		color.blue = (guint16) (mainProject->file[index]->color.blue * 65535);
+	}
+	else {
+		color.red = (guint16) (mainProject->background.red * 65535);
+		color.green = (guint16) (mainProject->background.green * 65535);
+		color.blue = (guint16) (mainProject->background.blue * 65535);
+	}
+	
+	gdk_colormap_alloc_color(gdk_colormap_get_system(), &color, FALSE, TRUE);
+	gtk_color_selection_set_current_color (colorsel, &color);
+
 	if ((screenRenderInfo.renderType >= GERBV_RENDER_TYPE_CAIRO_NORMAL)&&(index >= 0)) {
 		gtk_color_selection_set_has_opacity_control (colorsel, TRUE);
-		gtk_color_selection_set_current_alpha (colorsel, mainProject->file[index]->alpha);
+		gtk_color_selection_set_current_alpha (colorsel, (guint16) (mainProject->file[index]->color.alpha * 65535));
 	}
 	gtk_widget_show_all((GtkWidget *)cs);
 	if (gtk_dialog_run ((GtkDialog*)cs) == GTK_RESPONSE_OK) {
 		GtkColorSelection *colorsel = (GtkColorSelection *) cs->colorsel;
 		gint rowIndex = screen.win.colorSelectionIndex;
 		
+		GdkColor chosenColor;
+		gtk_color_selection_get_current_color (colorsel, &chosenColor);
 		if (index >= 0) {
-			gtk_color_selection_get_current_color (colorsel, &mainProject->file[rowIndex]->color);
-			gdk_colormap_alloc_color(gdk_colormap_get_system(), &mainProject->file[rowIndex]->color, FALSE, TRUE);
+			mainProject->file[index]->color.red = chosenColor.red / 65535.0;
+			mainProject->file[index]->color.green = chosenColor.green / 65535.0;
+			mainProject->file[index]->color.blue = chosenColor.blue / 65535.0;
 		}
 		else {
-			gtk_color_selection_get_current_color (colorsel, &mainProject->background);
-			gdk_colormap_alloc_color(gdk_colormap_get_system(), &mainProject->background, FALSE, TRUE);
+			mainProject->background.red = chosenColor.red / 65535.0;
+			mainProject->background.green = chosenColor.green / 65535.0;
+			mainProject->background.blue = chosenColor.blue / 65535.0;
 		}
 		if ((screenRenderInfo.renderType >= GERBV_RENDER_TYPE_CAIRO_NORMAL)&&(index >= 0)) {
-			mainProject->file[rowIndex]->alpha = gtk_color_selection_get_current_alpha (colorsel);
+			guint16 alpha;
+			alpha = gtk_color_selection_get_current_alpha (colorsel);
+			mainProject->file[rowIndex]->color.alpha = alpha / 65535.0;
 		}
 		
 		callbacks_update_layer_tree ();
@@ -2194,6 +2212,8 @@ callbacks_show_color_picker_dialog (gint index){
 	}
 	gtk_widget_destroy ((GtkWidget *)cs);
 	screen.win.colorSelectionDialog = NULL;
+
+	gdk_colormap_free_colors(gdk_colormap_get_system(), &color, 1);
 }
 
 /* --------------------------------------------------------- */
@@ -2420,10 +2440,10 @@ callbacks_update_layer_tree (void) {
 				
 				unsigned char red, green, blue, alpha;
 				
-				red = (unsigned char) (mainProject->file[idx]->color.red * 255 / G_MAXUINT16) ;
-				green = (unsigned char) (mainProject->file[idx]->color.green * 255 / G_MAXUINT16) ;
-				blue = (unsigned char) (mainProject->file[idx]->color.blue *255 / G_MAXUINT16) ;
-				alpha = (unsigned char) (mainProject->file[idx]->alpha * 255 / G_MAXUINT16) ;
+				red = (unsigned char) (mainProject->file[idx]->color.red * 255) ;
+				green = (unsigned char) (mainProject->file[idx]->color.green * 255) ;
+				blue = (unsigned char) (mainProject->file[idx]->color.blue * 255) ;
+				alpha = (unsigned char) (mainProject->file[idx]->color.alpha * 255) ;
 				
 				color = (red )* (256*256*256) + (green ) * (256*256) + (blue )* (256) + (alpha );
 				pixbuf = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8, 20, 15);
@@ -2808,6 +2828,14 @@ callbacks_drawingarea_expose_event (GtkWidget *widget, GdkEventExpose *event)
 	if (screenRenderInfo.renderType <= GERBV_RENDER_TYPE_GDK_XOR) {
 		GdkPixmap *new_pixmap;
 		GdkGC *gc = gdk_gc_new(widget->window);
+		GdkColor bg;
+
+		bg.pixel = 0;
+		bg.red = (guint16) (mainProject->background.red * 65535);
+		bg.green = (guint16) (mainProject->background.green * 65535);
+		bg.blue = (guint16) (mainProject->background.blue * 65535);
+
+		gdk_colormap_alloc_color(gdk_colormap_get_system(), &bg, FALSE, TRUE);
 
 		/*
 		* Create a pixmap with default background
@@ -2817,7 +2845,7 @@ callbacks_drawingarea_expose_event (GtkWidget *widget, GdkEventExpose *event)
 					widget->allocation.height,
 					-1);
 
-		gdk_gc_set_foreground(gc, &mainProject->background);
+		gdk_gc_set_foreground(gc, &bg);
 
 		gdk_draw_rectangle(new_pixmap, gc, TRUE, 
 			       event->area.x, event->area.y,
@@ -2863,6 +2891,7 @@ callbacks_drawingarea_expose_event (GtkWidget *widget, GdkEventExpose *event)
 			render_toggle_measure_line();
 		}
  
+		gdk_colormap_free_colors(gdk_colormap_get_system(), &bg, 1);
 		return FALSE;
 	}
 

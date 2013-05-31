@@ -45,7 +45,6 @@
 
 #include <glib.h>
 #include <gtk/gtk.h>
-#include <gdk/gdk.h>
 #include <gdk/gdkkeysyms.h>
 
 #ifdef HAVE_GETOPT_H
@@ -187,8 +186,8 @@ main_open_project_from_filename(gerbv_project_t *gerbvProject, gchar *filename)
 			project_list = originalList;
 			while (project_list) {
 				if (project_list->layerno == i) {
-					GdkColor colorTemplate = {0,project_list->rgb[0],
-					project_list->rgb[1],project_list->rgb[2]};
+					gerbv_color_t colorTemplate = {project_list->rgb[0] / 65535.0,
+					project_list->rgb[1] / 65535.0, project_list->rgb[2] / 65535.0, 1.0};
 					if (i == -1) {
 						gerbvProject->background = colorTemplate;
 					}
@@ -257,9 +256,9 @@ main_save_project_from_filename(gerbv_project_t *gerbvProject, gchar *filename)
     project_list->next = project_list;
     project_list->layerno = -1;
     project_list->filename = g_strdup(gerbvProject->path);
-    project_list->rgb[0] = gerbvProject->background.red;
-    project_list->rgb[1] = gerbvProject->background.green;
-    project_list->rgb[2] = gerbvProject->background.blue;
+    project_list->rgb[0] = (int) (gerbvProject->background.red * 65535);
+    project_list->rgb[1] = (int) (gerbvProject->background.green * 65535);
+    project_list->rgb[2] = (int) (gerbvProject->background.blue * 65535);
     project_list->next = NULL;
     
     /* loop over all layer files */
@@ -279,9 +278,9 @@ main_save_project_from_filename(gerbv_project_t *gerbvProject, gchar *filename)
 		 * absolute one */
 		tmp->filename = g_strdup(gerbvProject->file[idx]->fullPathname);
 	    }
-	    tmp->rgb[0] = gerbvProject->file[idx]->color.red;
-	    tmp->rgb[1] = gerbvProject->file[idx]->color.green;
-	    tmp->rgb[2] = gerbvProject->file[idx]->color.blue;
+	    tmp->rgb[0] = (int) (gerbvProject->file[idx]->color.red * 65535);
+	    tmp->rgb[1] = (int) (gerbvProject->file[idx]->color.green * 65535);
+	    tmp->rgb[2] = (int) (gerbvProject->file[idx]->color.blue * 65535);
 	    tmp->inverted = gerbvProject->file[idx]->transform.inverted;
 	    tmp->visible = gerbvProject->file[idx]->isVisible;
 
@@ -344,6 +343,9 @@ main(int argc, char *argv[])
     mainProject = gerbv_create_project();
     mainProject->execname = g_strdup(argv[0]);
     mainProject->execpath = g_path_get_dirname(argv[0]);
+
+    /* Set BG alpha to 1 to generate images with opaque backgrounds */
+    mainProject->background.alpha = 1.0;
     
     /* set default rendering mode */
 #ifdef WIN32
@@ -490,9 +492,9 @@ main(int argc, char *argv[])
 		fprintf(stderr, "Specified color values should be between 00 and FF.\n");
 		exit(1);
 	    }
-	    mainProject->background.red = r*257;
-    	    mainProject->background.green = g*257;
-    	    mainProject->background.blue = b*257;
+	    mainProject->background.red = r / 255.0;
+    	    mainProject->background.green = g / 255.0;
+    	    mainProject->background.blue = b / 255.0;
 	    break;
 	case 'f' :	// Set layer colors to this color (foreground color)
 	    if (optarg == NULL) {
@@ -745,18 +747,18 @@ main(int argc, char *argv[])
 		gchar *fullName = g_build_filename (g_get_current_dir (),
 						    argv[i], NULL);
 		gerbv_open_layer_from_filename_with_color (mainProject, fullName,
-			mainDefaultColors[loadedIndex % NUMBER_OF_DEFAULT_COLORS].red*257,
-			mainDefaultColors[loadedIndex % NUMBER_OF_DEFAULT_COLORS].green*257,
-			mainDefaultColors[loadedIndex % NUMBER_OF_DEFAULT_COLORS].blue*257,
-			mainDefaultColors[loadedIndex % NUMBER_OF_DEFAULT_COLORS].alpha*257);
+			mainDefaultColors[loadedIndex % NUMBER_OF_DEFAULT_COLORS].red / 255.0,
+			mainDefaultColors[loadedIndex % NUMBER_OF_DEFAULT_COLORS].green / 255.0,
+			mainDefaultColors[loadedIndex % NUMBER_OF_DEFAULT_COLORS].blue / 255.0,
+			mainDefaultColors[loadedIndex % NUMBER_OF_DEFAULT_COLORS].alpha / 255.0);
 		mainProject->path = g_path_get_dirname (fullName);
 		g_free (fullName);
 	    } else {
 		gerbv_open_layer_from_filename_with_color (mainProject, argv[i],
-			mainDefaultColors[loadedIndex % NUMBER_OF_DEFAULT_COLORS].red*257,
-			mainDefaultColors[loadedIndex % NUMBER_OF_DEFAULT_COLORS].green*257,
-			mainDefaultColors[loadedIndex % NUMBER_OF_DEFAULT_COLORS].blue*257,
-			mainDefaultColors[loadedIndex % NUMBER_OF_DEFAULT_COLORS].alpha*257);
+			mainDefaultColors[loadedIndex % NUMBER_OF_DEFAULT_COLORS].red / 255.0,
+			mainDefaultColors[loadedIndex % NUMBER_OF_DEFAULT_COLORS].green / 255.0,
+			mainDefaultColors[loadedIndex % NUMBER_OF_DEFAULT_COLORS].blue / 255.0,
+			mainDefaultColors[loadedIndex % NUMBER_OF_DEFAULT_COLORS].alpha / 255.0);
 		mainProject->path = g_path_get_dirname (argv[i]);
 	    }
 	    loadedIndex++;

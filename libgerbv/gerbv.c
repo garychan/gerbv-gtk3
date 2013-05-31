@@ -191,7 +191,7 @@ gerbv_open_layer_from_filename(gerbv_project_t *gerbvProject, gchar *filename)
 /* ------------------------------------------------------------------ */
 void 
 gerbv_open_layer_from_filename_with_color(gerbv_project_t *gerbvProject, gchar *filename,
-		guint16 red, guint16 green, guint16 blue, guint16 alpha)
+		double red, double green, double blue, double alpha)
 {
   gint idx_loaded;
   dprintf("Opening filename = %s\n", (gchar *) filename);
@@ -203,9 +203,8 @@ gerbv_open_layer_from_filename_with_color(gerbv_project_t *gerbvProject, gchar *
   } else {
     idx_loaded = gerbvProject->last_loaded;
     gerbvProject->file[idx_loaded]->layer_dirty = FALSE;
-    GdkColor colorTemplate = {0, red, green, blue};
+    gerbv_color_t colorTemplate = {red, green, blue, alpha};
     gerbvProject->file[idx_loaded]->color = colorTemplate;
-    gerbvProject->file[idx_loaded]->alpha = alpha;
     dprintf("     Successfully opened file!\n");	
   }
 } /* gerbv_open_layer_from_filename_with_color */  
@@ -314,7 +313,7 @@ gint
 gerbv_add_parsed_image_to_project (gerbv_project_t *gerbvProject, gerbv_image_t *parsed_image,
 			gchar *filename, gchar *baseName, int idx, int reload){
     gerb_verify_error_t error = GERB_IMAGE_OK;
-    int r, g, b; 
+    double r, g, b, a;
     
     dprintf("In open_image, now error check file....\n");
     error = gerbv_image_verify(parsed_image);
@@ -361,13 +360,13 @@ gerbv_add_parsed_image_to_project (gerbv_project_t *gerbvProject, gerbv_image_t 
     gerbvProject->file[idx]->name = g_strdup (baseName);
     
     
-    r = defaultColors[defaultColorIndex % NUMBER_OF_DEFAULT_COLORS].red*257;
-    g = defaultColors[defaultColorIndex % NUMBER_OF_DEFAULT_COLORS].green*257;
-    b = defaultColors[defaultColorIndex % NUMBER_OF_DEFAULT_COLORS].blue*257;
+    r = defaultColors[defaultColorIndex % NUMBER_OF_DEFAULT_COLORS].red / 255.0;
+    g = defaultColors[defaultColorIndex % NUMBER_OF_DEFAULT_COLORS].green / 255.0;
+    b = defaultColors[defaultColorIndex % NUMBER_OF_DEFAULT_COLORS].blue / 255.0;
+    a = defaultColors[defaultColorIndex % NUMBER_OF_DEFAULT_COLORS].alpha / 255.0;
 
-    GdkColor colorTemplate = {0, r, g, b};
+    gerbv_color_t colorTemplate = {r, g, b, a};
     gerbvProject->file[idx]->color = colorTemplate;
-    gerbvProject->file[idx]->alpha = defaultColors[defaultColorIndex % NUMBER_OF_DEFAULT_COLORS].alpha*257;
     gerbvProject->file[idx]->isVisible = TRUE;
     gerbvProject->file[idx]->transform = defaultTransformations[defaultColorIndex % NUMBER_OF_DEFAULT_TRANSFORMATIONS];
     /* update the number of files if we need to */
@@ -654,13 +653,17 @@ gerbv_render_to_pixmap_using_gdk (gerbv_project_t *gerbvProject, GdkPixmap *pixm
 	GdkGC *gc = gdk_gc_new(pixmap);
 	GdkPixmap *colorStamp, *clipmask;
 	int i;
+	GdkColor bg, layer;
 	
 	/* 
 	 * Remove old pixmap, allocate a new one, draw the background.
 	 */
-	if (!gerbvProject->background.pixel)
-	 	gdk_colormap_alloc_color(gdk_colormap_get_system(), &gerbvProject->background, FALSE, TRUE);
-	gdk_gc_set_foreground(gc, &gerbvProject->background);
+	bg.pixel = 0;
+	bg.red = 65535 * gerbvProject->background.red;
+	bg.green = 65535 * gerbvProject->background.green;
+	bg.blue = 65535 * gerbvProject->background.blue;
+	gdk_colormap_alloc_color(gdk_colormap_get_system(), &bg, FALSE, TRUE);
+	gdk_gc_set_foreground(gc, &bg);
 	gdk_draw_rectangle(pixmap, gc, TRUE, 0, 0, -1, -1);
 
 	/*
@@ -681,9 +684,12 @@ gerbv_render_to_pixmap_using_gdk (gerbv_project_t *gerbvProject, GdkPixmap *pixm
 			* Fill up image with all the foreground color. Excess pixels
 			* will be removed by clipmask.
 			*/
-			if (!gerbvProject->file[i]->color.pixel)
-	 			gdk_colormap_alloc_color(gdk_colormap_get_system(), &gerbvProject->file[i]->color, FALSE, TRUE);
-			gdk_gc_set_foreground(gc, &gerbvProject->file[i]->color);
+			layer.pixel = 0;
+			layer.red = 65535 * gerbvProject->file[i]->color.red;
+			layer.green = 65535 * gerbvProject->file[i]->color.green;
+			layer.blue = 65535 * gerbvProject->file[i]->color.blue;
+	 		gdk_colormap_alloc_color(gdk_colormap_get_system(), &layer, FALSE, TRUE);
+			gdk_gc_set_foreground(gc, &layer);
 			
 			/* switch back to regular draw function for the initial
 			   bitmap clear */
@@ -754,6 +760,8 @@ gerbv_render_to_pixmap_using_gdk (gerbv_project_t *gerbvProject, GdkPixmap *pixm
 	gdk_pixmap_unref(colorStamp);
 	gdk_pixmap_unref(clipmask);
 	gdk_gc_unref(gc);
+	gdk_colormap_free_colors(gdk_colormap_get_system(), &bg, 1);
+	gdk_colormap_free_colors(gdk_colormap_get_system(), &layer, 1);
 }
 
 /* ------------------------------------------------------------------ */
@@ -777,16 +785,17 @@ gerbv_render_all_layers_to_cairo_target (gerbv_project_t *gerbvProject, cairo_t 
 			gerbv_render_info_t *renderInfo) {
 	int i;
 	/* fill the background with the appropriate color */
-	cairo_set_source_rgba (cr, (double) gerbvProject->background.red/G_MAXUINT16,
-		(double) gerbvProject->background.green/G_MAXUINT16,
-		(double) gerbvProject->background.blue/G_MAXUINT16, 1);
+	cairo_set_source_rgba (cr, gerbvProject->background.red,
+		gerbvProject->background.green,
+		gerbvProject->background.blue,
+		gerbvProject->background.alpha);
 	cairo_paint (cr);
 	for(i = gerbvProject->last_loaded; i >= 0; i--) {
 		if (gerbvProject->file[i] && gerbvProject->file[i]->isVisible) {
 			cairo_push_group (cr);
 			gerbv_render_layer_to_cairo_target (cr, gerbvProject->file[i], renderInfo);
 			cairo_pop_group_to_source (cr);
-			cairo_paint_with_alpha (cr, (double) gerbvProject->file[i]->alpha/G_MAXUINT16);
+			cairo_paint_with_alpha (cr, gerbvProject->file[i]->color.alpha);
 		}
 	}
 }
@@ -830,9 +839,9 @@ gerbv_render_cairo_set_scale_and_translation(cairo_t *cr, gerbv_render_info_t *r
 /* ------------------------------------------------------------------ */
 void
 gerbv_render_layer_to_cairo_target_without_transforming(cairo_t *cr, gerbv_fileinfo_t *fileInfo, gerbv_render_info_t *renderInfo, gboolean pixelOutput) {
-	cairo_set_source_rgba (cr, (double) fileInfo->color.red/G_MAXUINT16,
-		(double) fileInfo->color.green/G_MAXUINT16,
-		(double) fileInfo->color.blue/G_MAXUINT16, 1);
+	cairo_set_source_rgba (cr, fileInfo->color.red,
+		fileInfo->color.green,
+		fileInfo->color.blue, 1);
 	
 	/* translate, rotate, and modify the image based on the layer-specific transformation struct */
 	cairo_save (cr);

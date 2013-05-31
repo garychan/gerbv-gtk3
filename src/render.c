@@ -607,9 +607,10 @@ void render_recreate_composite_surface () {
 
 	cairo_t *cr= cairo_create(screen.bufferSurface);
 	/* fill the background with the appropriate color */
-	cairo_set_source_rgba (cr, (double) mainProject->background.red/G_MAXUINT16,
-		(double) mainProject->background.green/G_MAXUINT16,
-		(double) mainProject->background.blue/G_MAXUINT16, 1);
+	cairo_set_source_rgba (cr, mainProject->background.red,
+		mainProject->background.green,
+		mainProject->background.blue,
+		mainProject->background.alpha);
 	cairo_paint (cr);
 	
 	for(i = mainProject->last_loaded; i >= 0; i--) {
@@ -617,8 +618,8 @@ void render_recreate_composite_surface () {
 			cairo_set_source_surface (cr, (cairo_surface_t *) mainProject->file[i]->privateRenderData,
 			                              0, 0);
 			/* ignore alpha if we are in high-speed render mode */
-			if (((double) mainProject->file[i]->alpha < 65535)&&(screenRenderInfo.renderType != GERBV_RENDER_TYPE_GDK_XOR)) {
-				cairo_paint_with_alpha(cr,(double) mainProject->file[i]->alpha/G_MAXUINT16);
+			if ((mainProject->file[i]->color.alpha < 1.0)&&(screenRenderInfo.renderType != GERBV_RENDER_TYPE_GDK_XOR)) {
+				cairo_paint_with_alpha(cr, mainProject->file[i]->color.alpha);
 			}
 			else {
 				cairo_paint (cr);
@@ -637,9 +638,10 @@ void render_recreate_composite_surface () {
 /* ------------------------------------------------------ */
 void render_project_to_cairo_target (cairo_t *cr) {
 	/* fill the background with the appropriate color */
-	cairo_set_source_rgba (cr, (double) mainProject->background.red/G_MAXUINT16,
-		(double) mainProject->background.green/G_MAXUINT16,
-		(double) mainProject->background.blue/G_MAXUINT16, 1);
+	cairo_set_source_rgba (cr, mainProject->background.red,
+		mainProject->background.green,
+		mainProject->background.blue,
+		mainProject->background.alpha);
 	cairo_paint (cr);
 
 	cairo_set_source_surface (cr, (cairo_surface_t *) screen.bufferSurface, 0 , 0);

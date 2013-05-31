@@ -589,11 +589,19 @@ typedef struct {
   gerbv_drill_stats_t *drill_stats;  /*!< Excellon drill statistics for the layer */
 } gerbv_image_t;
 
+/*!  Color tuple for RGBA values. Each component lies in the range from 0 to 1
+(inclusive) */
+typedef struct {
+  double red;
+  double green;
+  double blue;
+  double alpha;
+} gerbv_color_t;
+
 /*!  Holds information related to an individual layer that is part of a project */
 typedef struct {
   gerbv_image_t *image; /*!< the image holding all the geometry of the layer */
-  GdkColor color; /*!< the color to render this layer with */
-  guint16 alpha; /*!< the transparency to render this layer with */
+  gerbv_color_t color; /*!< the color to render this layer with */
   gboolean isVisible; /*!< TRUE if this layer should be rendered with the project */
   gpointer privateRenderData; /*!< private data holder for the rendering backend */
   gchar *fullPathname; /*!< this full pathname to the file */
@@ -610,7 +618,7 @@ typedef struct {
 /*!  The top-level structure used in libgerbv.  A gerbv_project_t groups together
 any number of layers, while keeping track of other basic paramters needed for rendering */
 typedef struct {
-  GdkColor  background; /*!< the background color used for rendering */
+  gerbv_color_t background; /*!< the background color used for rendering. */
   int max_files; /*!< the current number of fileinfos in the file array */
   gerbv_fileinfo_t **file; /*!< the array for holding the child fileinfos */
   int curr_index; /*!< the index of the currently active fileinfo */
@@ -706,10 +714,10 @@ gerbv_open_layer_from_filename (
 void 
 gerbv_open_layer_from_filename_with_color(gerbv_project_t *gerbvProject, /*!< the existing project to add the new layer to */
 	gchar *filename, /*!< the full pathname of the file to be parsed */
-	guint16 red, /*!< the value for the red color component */
-	guint16 green, /*!< the value for the green color component */
-	guint16 blue, /*!< the value for the blue color component */
-	guint16 alpha /*!< the value for the alpha color component */
+	double red, /*!< the value for the red color component */
+	double green, /*!< the value for the green color component */
+	double blue, /*!< the value for the blue color component */
+	double alpha /*!< the value for the alpha color component */
 );
 
 //! Free a fileinfo structure
