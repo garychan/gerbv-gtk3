@@ -30,17 +30,10 @@ selection calculating functions
 #ifndef DRAW_H
 #define DRAW_H
 
-#include <gdk/gdk.h>
 #include <cairo.h>
-#include <cairo-ps.h>
-#include <cairo-svg.h>
-#include <cairo-pdf.h>
-
-#endif /* DRAW_H */
-
 
 /*
- * Convert a gerber image to a GDK clip mask to be used when creating pixmap
+ * Draw a gerber image to a cairo context
  */
 int
 draw_image_to_cairo_target (cairo_t *cairoTarget, gerbv_image_t *image,
@@ -50,4 +43,5 @@ draw_image_to_cairo_target (cairo_t *cairoTarget, gerbv_image_t *image,
  					gerbv_user_transformation_t transform, gboolean pixelOutput);
 
 
+#endif /* DRAW_H */
 
