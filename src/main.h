@@ -96,7 +96,6 @@ typedef struct {
     gpointer bufferSurface;
     gpointer selectionRenderData;
 
-    GtkTooltips *tooltips;
     GtkWidget *popup_menu;
     struct {
 	GtkWidget *msg;
