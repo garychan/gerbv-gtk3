@@ -713,8 +713,6 @@ render_free_screen_resources (void) {
 	if (screen.windowSurface)
 		cairo_surface_destroy ((cairo_surface_t *)
 			screen.windowSurface);
-	if (screen.pixmap) 
-		gdk_pixmap_unref(screen.pixmap);
 }
 
 
