@@ -63,7 +63,7 @@
 #include "attribute.h"
 #include "render.h"
 
-#include "draw-gdk.h"
+#include "gerbv-gdk.h"
 
 #include "draw.h"
 #ifdef WIN32
