@@ -305,7 +305,7 @@ interface_create_gui (int req_width, int req_height)
 	mainWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title (GTK_WINDOW (mainWindow), _(WIN_TITLE));
 
-	vbox1 = gtk_vbox_new (FALSE, 0);
+	vbox1 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_container_add (GTK_CONTAINER (mainWindow), vbox1);
 
 	menubar1 = gtk_menu_bar_new ();
@@ -820,7 +820,7 @@ interface_create_gui (int req_width, int req_height)
 	gtk_widget_set_tooltip_text (bugs_menuitem, "View list of known gerbv bugs");	
 
 	/* Create toolbar (button bar) beneath main menu */
-	toolbar_hbox = gtk_hbox_new (FALSE, 0);
+	toolbar_hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
 	gtk_box_pack_start (GTK_BOX (vbox1), toolbar_hbox, FALSE, FALSE, 0);
 
 	button_toolbar = gtk_toolbar_new ();
@@ -914,11 +914,11 @@ interface_create_gui (int req_width, int req_height)
 	gtk_widget_set_tooltip_text (toggletoolbutton_measure, "Measure distances on the screen");
 	gtk_container_add (GTK_CONTAINER (button_toolbar), toggletoolbutton_measure);
 	
-	hpaned1 = gtk_hpaned_new ();
+	hpaned1 = gtk_paned_new (GTK_ORIENTATION_HORIZONTAL);
 	gtk_box_pack_start (GTK_BOX (vbox1), hpaned1, TRUE, TRUE, 0);
 	gtk_paned_set_position (GTK_PANED (hpaned1), 225);
 
-	sidepane_vbox = gtk_vbox_new (FALSE, 0);
+	sidepane_vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_set_size_request (sidepane_vbox, 150, -1);
 	
 	gtk_paned_pack1 (GTK_PANED (hpaned1), sidepane_vbox, TRUE, FALSE);
@@ -928,12 +928,12 @@ interface_create_gui (int req_width, int req_height)
 	gtk_widget_set_size_request (sidepane_notebook, 100, -1);
 	gtk_box_pack_start (GTK_BOX (sidepane_vbox), sidepane_notebook, TRUE, TRUE, 0);
 
-	vbox10 = gtk_vbox_new (FALSE, 3);
+	vbox10 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 3);
 	gtk_container_add (GTK_CONTAINER (sidepane_notebook), vbox10);
 	gtk_widget_set_size_request (vbox10, 82, -1);
 	gtk_container_set_border_width (GTK_CONTAINER (vbox10), 4);
 
-	hbox4 = gtk_hbox_new (FALSE, 0);
+	hbox4 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
 	gtk_box_pack_start (GTK_BOX (vbox10), hbox4, FALSE, FALSE, 0);
 
 	label1 = gtk_label_new (_("Rendering: "));
@@ -955,7 +955,7 @@ interface_create_gui (int req_width, int req_height)
 	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (scrolledwindow1), 
 					     GTK_SHADOW_IN);
 
-	hbox1 = gtk_hbox_new (TRUE, 0);
+	hbox1 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
 	gtk_box_pack_start (GTK_BOX (vbox10), hbox1, FALSE, FALSE, 0);
 
 	button4 = gtk_button_new ();
@@ -987,7 +987,7 @@ interface_create_gui (int req_width, int req_height)
 				    gtk_notebook_get_nth_page (GTK_NOTEBOOK (sidepane_notebook), 0), 
 				    Layer_label);
 
-	vbox11 = gtk_vbox_new (FALSE, 2);
+	vbox11 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 2);
 	gtk_container_add (GTK_CONTAINER (sidepane_notebook), vbox11);
 	gtk_container_set_border_width (GTK_CONTAINER (vbox11), 3);
 
@@ -1010,7 +1010,7 @@ interface_create_gui (int req_width, int req_height)
 				    gtk_notebook_get_nth_page (GTK_NOTEBOOK (sidepane_notebook), 1), 
 				    Message_label);
 
-	vbox2 = gtk_vbox_new (FALSE, 4);
+	vbox2 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 4);
 	gtk_paned_pack2 (GTK_PANED (hpaned1), vbox2, TRUE, FALSE);
 	gtk_container_set_border_width (GTK_CONTAINER (vbox2), 4);
 	
@@ -1039,17 +1039,17 @@ interface_create_gui (int req_width, int req_height)
 	hAdjustment = (GtkWidget *) gtk_adjustment_new (0.0, -1000.0, 1000.0, 1000.0, 1000.0, 500.0);
 	vAdjustment = (GtkWidget *) gtk_adjustment_new (0.0, -1000.0, 1000.0, 1000.0, 1000.0, 500.0);
 	
-	hScrollbar = gtk_hscrollbar_new (GTK_ADJUSTMENT (hAdjustment));
+	hScrollbar = gtk_scrollbar_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (hAdjustment));
 	gtk_table_attach (GTK_TABLE (main_view_table), hScrollbar, 1, 2, 2, 3,
 	                  (GtkAttachOptions) (GTK_FILL),
 	                  (GtkAttachOptions) (GTK_FILL), 0, 0);
 	                  
-	vScrollbar = gtk_vscrollbar_new (GTK_ADJUSTMENT (vAdjustment));
+	vScrollbar = gtk_scrollbar_new (GTK_ORIENTATION_VERTICAL, GTK_ADJUSTMENT (vAdjustment));
 	gtk_table_attach (GTK_TABLE (main_view_table), vScrollbar, 2, 3, 1, 2,
 	                  (GtkAttachOptions) (GTK_FILL),
 	                  (GtkAttachOptions) (GTK_FILL), 0, 0);
 	
-	hbox5 = gtk_hbox_new (FALSE, 10);
+	hbox5 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 10);
 	gtk_box_pack_start (GTK_BOX (vbox2), hbox5, FALSE, FALSE, 0);
 
 	statusbar_label_left = gtk_label_new ("( 0.0,  0.0 )");
@@ -1567,7 +1567,7 @@ interface_get_alert_dialog_response (gchar *primaryText, gchar *secondaryText,
 
   dialog_vbox1 = gtk_dialog_get_content_area (GTK_DIALOG (dialog1));
 
-  hbox1 = gtk_hbox_new (FALSE, 12);
+  hbox1 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
   gtk_box_pack_start (GTK_BOX (dialog_vbox1), hbox1, TRUE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (hbox1), 6);
 
@@ -1579,7 +1579,7 @@ interface_get_alert_dialog_response (gchar *primaryText, gchar *secondaryText,
   		"</span>\n<span/>\n",secondaryText,NULL);
   label1 = gtk_label_new (labelMessage);
   g_free (labelMessage);
-  GtkWidget *vbox9 = gtk_vbox_new (FALSE, 0);
+  GtkWidget *vbox9 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_box_pack_start (GTK_BOX (vbox9), label1, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (hbox1), vbox9, FALSE, FALSE, 0);
   gtk_label_set_use_markup (GTK_LABEL (label1), TRUE);
@@ -1587,7 +1587,7 @@ interface_get_alert_dialog_response (gchar *primaryText, gchar *secondaryText,
 
   // even with no checkbox, this extra hbox gives the recommended 24 px space between the
   //   label and the buttons
-  GtkWidget *hbox2 = gtk_hbox_new (FALSE, 12);
+  GtkWidget *hbox2 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
   if (show_checkbox) {
     GtkWidget *label3 = gtk_label_new ("    ");
 
@@ -1660,7 +1660,7 @@ interface_show_alert_dialog (gchar *primaryText, gchar *secondaryText,
 
   dialog_vbox1 = gtk_dialog_get_content_area (GTK_DIALOG (dialog1));
 
-  hbox1 = gtk_hbox_new (FALSE, 12);
+  hbox1 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
   gtk_box_pack_start (GTK_BOX (dialog_vbox1), hbox1, TRUE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (hbox1), 6);
 
@@ -1673,13 +1673,13 @@ interface_show_alert_dialog (gchar *primaryText, gchar *secondaryText,
   label1 = gtk_label_new (labelMessage);
   g_free (labelMessage);
   
-  GtkWidget *vbox9 = gtk_vbox_new (FALSE, 0);
+  GtkWidget *vbox9 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_box_pack_start (GTK_BOX (vbox9), label1, FALSE, FALSE, 0);
   gtk_label_set_use_markup (GTK_LABEL (label1), TRUE);
   gtk_label_set_line_wrap (GTK_LABEL (label1), TRUE);
   gtk_box_pack_start (GTK_BOX (hbox1), vbox9, FALSE, FALSE, 0);
   
-  GtkWidget *hbox2 = gtk_hbox_new (FALSE, 12);
+  GtkWidget *hbox2 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
   if (show_checkbox) {
     GtkWidget *label3 = gtk_label_new ("    ");
 
