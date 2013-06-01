@@ -2304,7 +2304,7 @@ gboolean
 callbacks_layer_tree_key_press (GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
 	/* if space is pressed while a color picker icon is in focus,
 	show the color picker dialog. */
-	if(event->keyval == GDK_space){
+	if(event->keyval == GDK_KEY_space){
 		GtkTreeView *tree;
 		GtkTreePath *path;
 		GtkTreeViewColumn *col;
@@ -3054,7 +3054,7 @@ gboolean
 callbacks_window_key_press_event (GtkWidget *widget, GdkEventKey *event)
 {
 	switch(event->keyval) {
-		case GDK_Escape:
+		case GDK_KEY_Escape:
 			if (screen.tool == POINTER) {
 				snprintf(screen.statusbar.diststr, MAX_DISTLEN, 
 		 			"No objects are currently selected");
@@ -3067,7 +3067,7 @@ callbacks_window_key_press_event (GtkWidget *widget, GdkEventKey *event)
 	}
 
 	/* Escape may be used to abort outline zoom and just plain repaint */
-	if (event->keyval == GDK_Escape) {
+	if (event->keyval == GDK_KEY_Escape) {
 		screen.state = NORMAL;
 		render_refresh_rendered_image_on_screen();
 	}
