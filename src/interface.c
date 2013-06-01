@@ -213,7 +213,6 @@ interface_create_gui (int req_width, int req_height)
 	GtkWidget *bugs_menuitem;
 	GtkWidget *image34;
 	GtkWidget *toolbar_hbox;
-	GtkWidget *handlebox;
 	GtkWidget *button_toolbar;
 	/*GtkIconSize tmp_toolbar_icon_size;*/
 	GtkWidget *toolbutton_new;
@@ -816,13 +815,9 @@ interface_create_gui (int req_width, int req_height)
 	toolbar_hbox = gtk_hbox_new (FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (vbox1), toolbar_hbox, FALSE, FALSE, 0);
 
-	handlebox = gtk_handle_box_new ();
-	
-	gtk_box_pack_start (GTK_BOX (toolbar_hbox), handlebox, TRUE, TRUE, 0);
-
 	button_toolbar = gtk_toolbar_new ();
 	gtk_widget_set_size_request (button_toolbar, 500, -1);
-	gtk_container_add (GTK_CONTAINER (handlebox), button_toolbar);
+	gtk_box_pack_start (GTK_BOX (toolbar_hbox), button_toolbar, TRUE, TRUE, 0);
 	gtk_toolbar_set_style (GTK_TOOLBAR (button_toolbar), GTK_TOOLBAR_ICONS);
 	/*tmp_toolbar_icon_size = gtk_toolbar_get_icon_size (GTK_TOOLBAR (button_toolbar));*/
 
