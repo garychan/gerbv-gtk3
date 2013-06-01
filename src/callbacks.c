@@ -33,9 +33,6 @@
 #include <glib.h>
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
-#if !defined(WIN32) && !defined(QUARTZ)
-#include <gdk/gdkx.h>
-#endif
 #include <gdk/gdkkeysyms.h>
 
 #ifdef HAVE_STDLIB_H
@@ -66,13 +63,6 @@
 #include "gerbv-gdk.h"
 
 #include "draw.h"
-#ifdef WIN32
-#include <cairo-win32.h>
-#elif QUARTZ
-#include <cairo-quartz.h>
-#else
-#include <cairo-xlib.h>
-#endif
 
 
 #define dprintf if(DEBUG) printf
@@ -2762,22 +2752,10 @@ callbacks_drawingarea_configure_event (GtkWidget *widget, GdkEventConfigure *eve
 	
 	gdk_drawable_get_size (drawable, &screenRenderInfo.displayWidth, &screenRenderInfo.displayHeight);
 
-	/* set this up if cairo is compiled, since we may need to switch over to
-	   using the surface at any time */
-	int x_off=0, y_off=0;
-	GdkVisual *visual;
-	
-	if (GDK_IS_WINDOW(widget->window)) {
-	      /* query the window's backbuffer if it has one */
-		GdkWindow *window = GDK_WINDOW(widget->window);
-	      gdk_window_get_internal_paint_info (window, &drawable, &x_off, &y_off);
-	}
-	visual = gdk_drawable_get_visual (drawable);
 	if (screen.windowSurface)
 		cairo_surface_destroy ((cairo_surface_t *)
 			screen.windowSurface);
 
-#if defined(WIN32) || defined(QUARTZ)
 	cairo_t *cairoTarget = gdk_cairo_create (GDK_WINDOW(widget->window));
 	
 	screen.windowSurface = cairo_get_target (cairoTarget);
@@ -2785,13 +2763,7 @@ callbacks_drawingarea_configure_event (GtkWidget *widget, GdkEventConfigure *eve
 	   is destroyed next */
 	screen.windowSurface = cairo_surface_reference (screen.windowSurface);
 	cairo_destroy (cairoTarget);
-#else
-	screen.windowSurface = (gpointer) cairo_xlib_surface_create (GDK_DRAWABLE_XDISPLAY (drawable),
-                                          GDK_DRAWABLE_XID (drawable),
-                                          GDK_VISUAL_XVISUAL (visual),
-                                          screenRenderInfo.displayWidth,
-                                          screenRenderInfo.displayHeight);
-#endif
+
 	/* if this is the first time, go ahead and call autoscale even if we don't
 	   have a model loaded */
 	if ((screenRenderInfo.scaleFactorX < 0.001)||(screenRenderInfo.scaleFactorY < 0.001)) {
@@ -2862,38 +2834,10 @@ callbacks_drawingarea_expose_event (GtkWidget *widget, GdkEventExpose *event)
 	}
 	else {
 		cairo_t *cr;
-		int width, height;
-		int x_off=0, y_off=0;
-		GdkDrawable *drawable = widget->window;
-		GdkVisual *visual;
-
-		if (GDK_IS_WINDOW(widget->window)) {
-		      /* query the window's backbuffer if it has one */
-			GdkWindow *window = GDK_WINDOW(widget->window);
-		      gdk_window_get_internal_paint_info (window,
-		                                          &drawable, &x_off, &y_off);
-		}
-		visual = gdk_drawable_get_visual (drawable);
-		gdk_drawable_get_size (drawable, &width, &height);
-
-#if defined(WIN32) || defined(QUARTZ)
-		/* FIXME */
 		cr = gdk_cairo_create (GDK_WINDOW(widget->window));
-#else      
-		cairo_surface_t *buffert;
-	
-		buffert = (gpointer) cairo_xlib_surface_create (GDK_DRAWABLE_XDISPLAY (drawable),
-	        	                                  GDK_DRAWABLE_XID (drawable),
-		                                          GDK_VISUAL_XVISUAL (visual),
-		                                          event->area.width, event->area.height);
-		cr = cairo_create (buffert);
-#endif
 		cairo_translate (cr, -event->area.x + screen.off_x, -event->area.y + screen.off_y);
 		render_project_to_cairo_target (cr);
 		cairo_destroy (cr);
-#if !defined(WIN32) && !defined(QUARTZ)
-		cairo_surface_destroy (buffert);
-#endif
 	}
 
 	/*
