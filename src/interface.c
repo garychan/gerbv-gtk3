@@ -78,14 +78,10 @@ rename_main_window(char const* filename, GtkWidget *main_win)
 void
 set_window_icon (GtkWidget * this_window)
 {
-	GdkPixmap *pixmap;
-	GdkBitmap *mask;
+	GdkPixbuf *icon;
 
-	pixmap = gdk_pixmap_create_from_xpm_d (gtk_widget_get_window(this_window), &mask,
-		&this_window->style->bg[GTK_STATE_NORMAL], gerbv_icon_xpm);
-	gdk_window_set_icon (gtk_widget_get_window(this_window), NULL, pixmap, mask);
-
-	return;
+	icon = gdk_pixbuf_new_from_xpm_data((const char **) gerbv_icon_xpm);
+	gtk_window_set_icon (GTK_WINDOW(this_window), icon);
 }
 
 /* ---------------------------------------------- */
