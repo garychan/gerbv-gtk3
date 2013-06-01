@@ -824,6 +824,8 @@ interface_create_gui (int req_width, int req_height)
 	gtk_box_pack_start (GTK_BOX (vbox1), toolbar_hbox, FALSE, FALSE, 0);
 
 	button_toolbar = gtk_toolbar_new ();
+	gtk_style_context_add_class (gtk_widget_get_style_context (button_toolbar),
+		GTK_STYLE_CLASS_PRIMARY_TOOLBAR);
 	gtk_widget_set_size_request (button_toolbar, 500, -1);
 	gtk_box_pack_start (GTK_BOX (toolbar_hbox), button_toolbar, TRUE, TRUE, 0);
 	gtk_toolbar_set_style (GTK_TOOLBAR (button_toolbar), GTK_TOOLBAR_ICONS);
