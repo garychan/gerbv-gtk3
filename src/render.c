@@ -273,7 +273,7 @@ render_draw_selection_box_outline(void) {
 	if (dy > 0)
 		dy -= 1;
 
-        cr = gdk_cairo_create(screen.drawing_area->window);
+        cr = gdk_cairo_create(gtk_widget_get_window(screen.drawing_area));
 
         cairo_rectangle(cr, x1, y1, dx, dy);
         stroke_tool(cr);
@@ -306,7 +306,7 @@ render_draw_zoom_outline(gboolean centered)
 		y2 = y1+dy;
 	}
 
-        cr = gdk_cairo_create(screen.drawing_area->window);
+        cr = gdk_cairo_create(gtk_widget_get_window(screen.drawing_area));
 
 	/* effective zoom region (dashed) */
 
@@ -438,7 +438,7 @@ render_toggle_measure_line(void)
 	choose_nearest_pixel(&last_x);
 	choose_nearest_pixel(&last_y);
 
-	cr = gdk_cairo_create(screen.drawing_area->window);
+	cr = gdk_cairo_create(gtk_widget_get_window(screen.drawing_area));
 
 	cairo_move_to(cr, start_x, start_y);
 	cairo_line_to(cr, last_x, last_y);
@@ -515,13 +515,13 @@ void render_refresh_rendered_image_on_screen (void) {
 	
 	dprintf("----> Entering redraw_pixmap...\n");
 	cursor = gdk_cursor_new(GDK_WATCH);
-	gdk_window_set_cursor(GDK_WINDOW(screen.drawing_area->window), cursor);
+	gdk_window_set_cursor(gtk_widget_get_window(screen.drawing_area), cursor);
 	gdk_cursor_destroy(cursor);
 
 	if (screenRenderInfo.renderType <= GERBV_RENDER_TYPE_GDK_XOR){
 	    if (screen.pixmap) 
 		gdk_pixmap_unref(screen.pixmap);
-	    screen.pixmap = gdk_pixmap_new(screen.drawing_area->window, screenRenderInfo.displayWidth,
+	    screen.pixmap = gdk_pixmap_new(gtk_widget_get_window(screen.drawing_area), screenRenderInfo.displayWidth,
 	    screenRenderInfo.displayHeight, -1);
 	    gerbv_render_to_pixmap_using_gdk (mainProject, screen.pixmap, &screenRenderInfo, &screen.selectionInfo,
 	    		&screen.selection_color);	

@@ -1867,24 +1867,24 @@ callbacks_switch_to_normal_tool_cursor (gint toolNumber) {
 
 	switch (toolNumber) {
 		case POINTER:
-			gdk_window_set_cursor(GDK_WINDOW(screen.drawing_area->window),
+			gdk_window_set_cursor(gtk_widget_get_window(screen.drawing_area),
 						  GERBV_DEF_CURSOR);
 			break;
 		case PAN:
 			cursor = gdk_cursor_new(GDK_FLEUR);
-			gdk_window_set_cursor(GDK_WINDOW(screen.drawing_area->window),
+			gdk_window_set_cursor(gtk_widget_get_window(screen.drawing_area),
 					  cursor);
 			gdk_cursor_destroy(cursor);
 			break;
 		case ZOOM:
 			cursor = gdk_cursor_new(GDK_SIZING);
-			gdk_window_set_cursor(GDK_WINDOW(screen.drawing_area->window),
+			gdk_window_set_cursor(gtk_widget_get_window(screen.drawing_area),
 					      cursor);
 			gdk_cursor_destroy(cursor);
 			break;
 		case MEASURE:
 			cursor = gdk_cursor_new(GDK_CROSSHAIR);
-			gdk_window_set_cursor(GDK_WINDOW(screen.drawing_area->window),
+			gdk_window_set_cursor(gtk_widget_get_window(screen.drawing_area),
 					  cursor);
 			gdk_cursor_destroy(cursor);
 			break;
@@ -1900,14 +1900,14 @@ callbacks_switch_to_correct_cursor (void) {
 
 	if (screen.state == IN_MOVE) {
 		cursor = gdk_cursor_new(GDK_FLEUR);
-		gdk_window_set_cursor(GDK_WINDOW(screen.drawing_area->window),
+		gdk_window_set_cursor(gtk_widget_get_window(screen.drawing_area),
 				  cursor);
 		gdk_cursor_destroy(cursor);
 		return;
 	}
 	else if (screen.state == IN_ZOOM_OUTLINE) {
 		cursor = gdk_cursor_new(GDK_SIZING);
-		gdk_window_set_cursor(GDK_WINDOW(screen.drawing_area->window),
+		gdk_window_set_cursor(gtk_widget_get_window(screen.drawing_area),
 				  cursor);
 		gdk_cursor_destroy(cursor);
 		return;
@@ -2756,7 +2756,7 @@ callbacks_drawingarea_configure_event (GtkWidget *widget, GdkEventConfigure *eve
 		cairo_surface_destroy ((cairo_surface_t *)
 			screen.windowSurface);
 
-	cairo_t *cairoTarget = gdk_cairo_create (GDK_WINDOW(widget->window));
+	cairo_t *cairoTarget = gdk_cairo_create (gtk_widget_get_window(widget));
 	
 	screen.windowSurface = cairo_get_target (cairoTarget);
 	/* increase surface reference by one so it isn't freed when the cairo_t
@@ -2779,7 +2779,7 @@ callbacks_drawingarea_expose_event (GtkWidget *widget, GdkEventExpose *event)
 {
 	if (screenRenderInfo.renderType <= GERBV_RENDER_TYPE_GDK_XOR) {
 		GdkPixmap *new_pixmap;
-		GdkGC *gc = gdk_gc_new(widget->window);
+		GdkGC *gc = gdk_gc_new(gtk_widget_get_window(widget));
 		GdkColor bg;
 
 		bg.pixel = 0;
@@ -2792,7 +2792,7 @@ callbacks_drawingarea_expose_event (GtkWidget *widget, GdkEventExpose *event)
 		/*
 		* Create a pixmap with default background
 		*/
-		new_pixmap = gdk_pixmap_new(widget->window,
+		new_pixmap = gdk_pixmap_new(gtk_widget_get_window(widget),
 					widget->allocation.width,
 					widget->allocation.height,
 					-1);
@@ -2820,7 +2820,7 @@ callbacks_drawingarea_expose_event (GtkWidget *widget, GdkEventExpose *event)
 		/*
 		* Draw the whole thing onto screen
 		*/
-		gdk_draw_pixmap(widget->window,
+		gdk_draw_pixmap(gtk_widget_get_window(widget),
 			    widget->style->fg_gc[GTK_WIDGET_STATE (widget)],
 			    new_pixmap,
 			    event->area.x, event->area.y,
@@ -2834,7 +2834,7 @@ callbacks_drawingarea_expose_event (GtkWidget *widget, GdkEventExpose *event)
 	}
 	else {
 		cairo_t *cr;
-		cr = gdk_cairo_create (GDK_WINDOW(widget->window));
+		cr = gdk_cairo_create (gtk_widget_get_window(widget));
 		cairo_translate (cr, -event->area.x + screen.off_x, -event->area.y + screen.off_y);
 		render_project_to_cairo_target (cr);
 		cairo_destroy (cr);
@@ -3035,7 +3035,7 @@ callbacks_drawingarea_button_press_event (GtkWidget *widget, GdkEventButton *eve
 			screen.last_x = event->x;
 			screen.last_y = event->y;
 			cursor = gdk_cursor_new(GDK_FLEUR);
-			gdk_window_set_cursor(GDK_WINDOW(screen.drawing_area->window),
+			gdk_window_set_cursor(gtk_widget_get_window(screen.drawing_area),
 					  cursor);
 			gdk_cursor_destroy(cursor);
 			break;
@@ -3065,7 +3065,7 @@ callbacks_drawingarea_button_press_event (GtkWidget *widget, GdkEventButton *eve
 				screen.start_y = event->y;
 				screen.centered_outline_zoom = event->state & GDK_SHIFT_MASK;
 				cursor = gdk_cursor_new(GDK_SIZING);
-				gdk_window_set_cursor(GDK_WINDOW(screen.drawing_area->window),
+				gdk_window_set_cursor(gtk_widget_get_window(screen.drawing_area),
 						  cursor);
 				gdk_cursor_destroy(cursor);
 			}
@@ -3420,7 +3420,7 @@ void callbacks_force_expose_event_for_screen (void){
 	update_rect.height = screenRenderInfo.displayHeight;
 
 	/* Calls expose_event */
-	gdk_window_invalidate_rect (screen.drawing_area->window, &update_rect, FALSE);
+	gdk_window_invalidate_rect (gtk_widget_get_window(screen.drawing_area), &update_rect, FALSE);
 	
 	/* update other gui things that could have changed */
 	callbacks_update_ruler_scales ();

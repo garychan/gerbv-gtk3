@@ -82,9 +82,9 @@ set_window_icon (GtkWidget * this_window)
 	GdkPixmap *pixmap;
 	GdkBitmap *mask;
 
-	pixmap = gdk_pixmap_create_from_xpm_d (this_window->window, &mask,
+	pixmap = gdk_pixmap_create_from_xpm_d (gtk_widget_get_window(this_window), &mask,
 		&this_window->style->bg[GTK_STATE_NORMAL], gerbv_icon_xpm);
-	gdk_window_set_icon (this_window->window, NULL, pixmap, mask);
+	gdk_window_set_icon (gtk_widget_get_window(this_window), NULL, pixmap, mask);
 
 	return;
 }
