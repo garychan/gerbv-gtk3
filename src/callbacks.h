@@ -26,6 +26,8 @@
     \ingroup gerbv
 */
 
+#include <cairo.h>
+
 enum {
 	CALLBACKS_SAVE_PROJECT_AS,
 	CALLBACKS_SAVE_FILE_PS,
@@ -156,7 +158,7 @@ gboolean
 callbacks_drawingarea_configure_event (GtkWidget *widget, GdkEventConfigure *event);
 
 gboolean
-callbacks_drawingarea_expose_event (GtkWidget *widget, GdkEventExpose *event);
+callbacks_drawingarea_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data);
 
 void
 callbacks_handle_log_messages(const gchar *log_domain,

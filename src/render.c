@@ -309,15 +309,15 @@ render_draw_zoom_outline(gboolean centered)
 
 	/* effective zoom region (dashed) */
 
-	if ((dy == 0) || ((double)dx/dy > (double)screen.drawing_area->allocation.width/
-				screen.drawing_area->allocation.height)) {
-		h = rint(dx * (double)screen.drawing_area->allocation.height/
-			screen.drawing_area->allocation.width);
+	if ((dy == 0) || ((double)dx/dy > (double)gtk_widget_get_allocated_width(screen.drawing_area)/
+				gtk_widget_get_allocated_height(screen.drawing_area))) {
+		h = rint(dx * (double)gtk_widget_get_allocated_height(screen.drawing_area)/
+			gtk_widget_get_allocated_width(screen.drawing_area));
 		w = dx;
 	} 
 	else {
-		w = rint(dy * (double)screen.drawing_area->allocation.width/
-			screen.drawing_area->allocation.height);
+		w = rint(dy * (double)gtk_widget_get_allocated_width(screen.drawing_area)/
+			gtk_widget_get_allocated_height(screen.drawing_area));
 		h = dy;
 	}
 

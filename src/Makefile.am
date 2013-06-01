@@ -35,7 +35,9 @@ gerbv_SOURCES = \
 		scheme.h \
 		callbacks.c callbacks.h interface.c \
 		interface.h render.c render.h \
-		icons.h
+		icons.h \
+		gimpruler.h \
+		gimpruler.c
 
 gerbv_LDADD = ../libgerbv/libgerbv.la
 gerbv_DEPENDENCIES = ../libgerbv/libgerbv.la

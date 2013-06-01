@@ -34,6 +34,7 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkkeysyms.h>
+#include "gimpruler.h"
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -1719,11 +1720,15 @@ callbacks_update_ruler_scales (void) {
 	}
 	/* make sure the widgets actually exist before setting (in case this gets
 	   called before everything is realized */
-	if (screen.win.hRuler)
-		gtk_ruler_set_range (GTK_RULER (screen.win.hRuler), xStart, xEnd, 0, xEnd - xStart);
+	if (screen.win.hRuler) {
+		gimp_ruler_set_range (GIMP_RULER (screen.win.hRuler), xStart, xEnd, xEnd - xStart);
+		gimp_ruler_set_position(GIMP_RULER (screen.win.hRuler), 0);
+	}
 	/* reverse y min and max, since the ruler starts at the top */
-	if (screen.win.vRuler)
-		gtk_ruler_set_range (GTK_RULER (screen.win.vRuler), yEnd, yStart, 0, yEnd - yStart);
+	if (screen.win.vRuler) {
+		gimp_ruler_set_range (GIMP_RULER (screen.win.vRuler), yEnd, yStart, yEnd - yStart);
+		gimp_ruler_set_position(GIMP_RULER (screen.win.vRuler), 0);
+	}
 }
 
 /* --------------------------------------------------------- */
@@ -1848,8 +1853,8 @@ callbacks_get_col_number_from_tree_view_column (GtkTreeViewColumn *col)
 	gint   num;
 	
 	g_return_val_if_fail ( col != NULL, -1 );
-	g_return_val_if_fail ( col->tree_view != NULL, -1 );
-	cols = gtk_tree_view_get_columns(GTK_TREE_VIEW(col->tree_view));
+	g_return_val_if_fail ( gtk_tree_view_column_get_tree_view(col) != NULL, -1 );
+	cols = gtk_tree_view_get_columns(GTK_TREE_VIEW(gtk_tree_view_column_get_tree_view(col)));
 	num = g_list_index(cols, (gpointer) col);
 	g_list_free(cols);
 	return num;
@@ -2111,61 +2116,57 @@ void callbacks_layer_tree_row_inserted (GtkTreeModel *tree_model, GtkTreePath  *
 void
 callbacks_show_color_picker_dialog (gint index){
 	screen.win.colorSelectionDialog = NULL;
-	GtkColorSelectionDialog *cs= (GtkColorSelectionDialog *) gtk_color_selection_dialog_new ("Select a color");
-	GtkColorSelection *colorsel = (GtkColorSelection *) cs->colorsel;
-
-	GdkColor color = { 0, };
+	GtkColorChooserDialog *cs = GTK_COLOR_CHOOSER_DIALOG(gtk_color_chooser_dialog_new ("Select a color", NULL));
+	GtkColorChooser *chooser = GTK_COLOR_CHOOSER(cs);
 	
-	screen.win.colorSelectionDialog = (GtkWidget *) cs;
+	screen.win.colorSelectionDialog = GTK_WIDGET(cs);
 	screen.win.colorSelectionIndex = index;
+
+	GdkRGBA rgba;
+
+	/* With Cairo we always support alpha on the colors, except for the background */
 	if (index >= 0) {
-		color.red = (guint16) (mainProject->file[index]->color.red * 65535);
-		color.green = (guint16) (mainProject->file[index]->color.green * 65535);
-		color.blue = (guint16) (mainProject->file[index]->color.blue * 65535);
+		rgba.red = mainProject->file[index]->color.red;
+		rgba.green = mainProject->file[index]->color.green;
+		rgba.blue = mainProject->file[index]->color.blue;
+		rgba.alpha = mainProject->file[index]->color.alpha;
+		gtk_color_chooser_set_rgba(chooser, &rgba);
+		gtk_color_chooser_set_use_alpha(chooser, TRUE);
 	}
 	else {
-		color.red = (guint16) (mainProject->background.red * 65535);
-		color.green = (guint16) (mainProject->background.green * 65535);
-		color.blue = (guint16) (mainProject->background.blue * 65535);
+		rgba.red = mainProject->background.red;
+		rgba.green = mainProject->background.green;
+		rgba.blue = mainProject->background.blue;
+		rgba.alpha = mainProject->background.alpha;
+		gtk_color_chooser_set_rgba(chooser, &rgba);
+		gtk_color_chooser_set_use_alpha(chooser, FALSE);
 	}
-	
-	gdk_colormap_alloc_color(gdk_colormap_get_system(), &color, FALSE, TRUE);
-	gtk_color_selection_set_current_color (colorsel, &color);
 
-	if ((screenRenderInfo.renderType >= GERBV_RENDER_TYPE_CAIRO_NORMAL)&&(index >= 0)) {
-		gtk_color_selection_set_has_opacity_control (colorsel, TRUE);
-		gtk_color_selection_set_current_alpha (colorsel, (guint16) (mainProject->file[index]->color.alpha * 65535));
-	}
-	gtk_widget_show_all((GtkWidget *)cs);
-	if (gtk_dialog_run ((GtkDialog*)cs) == GTK_RESPONSE_OK) {
-		GtkColorSelection *colorsel = (GtkColorSelection *) cs->colorsel;
+	gtk_widget_show_all(GTK_WIDGET(cs));
+	if (gtk_dialog_run (GTK_DIALOG(cs)) == GTK_RESPONSE_OK) {
 		gint rowIndex = screen.win.colorSelectionIndex;
 		
-		GdkColor chosenColor;
-		gtk_color_selection_get_current_color (colorsel, &chosenColor);
+		gtk_color_chooser_get_rgba(chooser, &rgba);
+
+		gerbv_color_t *c;
+
 		if (index >= 0) {
-			mainProject->file[index]->color.red = chosenColor.red / 65535.0;
-			mainProject->file[index]->color.green = chosenColor.green / 65535.0;
-			mainProject->file[index]->color.blue = chosenColor.blue / 65535.0;
+			c = &mainProject->file[rowIndex]->color;
 		}
 		else {
-			mainProject->background.red = chosenColor.red / 65535.0;
-			mainProject->background.green = chosenColor.green / 65535.0;
-			mainProject->background.blue = chosenColor.blue / 65535.0;
-		}
-		if ((screenRenderInfo.renderType >= GERBV_RENDER_TYPE_CAIRO_NORMAL)&&(index >= 0)) {
-			guint16 alpha;
-			alpha = gtk_color_selection_get_current_alpha (colorsel);
-			mainProject->file[rowIndex]->color.alpha = alpha / 65535.0;
+			c = &mainProject->background;
 		}
 		
+		c->red = rgba.red;
+		c->green = rgba.green;
+		c->blue = rgba.blue;
+		c->alpha = rgba.alpha;
+
 		callbacks_update_layer_tree ();
 		render_refresh_rendered_image_on_screen();
 	}
-	gtk_widget_destroy ((GtkWidget *)cs);
+	gtk_widget_destroy (GTK_WIDGET(cs));
 	screen.win.colorSelectionDialog = NULL;
-
-	gdk_colormap_free_colors(gdk_colormap_get_system(), &color, 1);
 }
 
 /* --------------------------------------------------------- */
@@ -2739,15 +2740,11 @@ callbacks_drawingarea_configure_event (GtkWidget *widget, GdkEventConfigure *eve
 
 /* --------------------------------------------------------- */
 gboolean
-callbacks_drawingarea_expose_event (GtkWidget *widget, GdkEventExpose *event)
-{
+callbacks_drawingarea_draw (GtkWidget *widget, cairo_t *cr, gpointer user_data) {
 	g_assert(screenRenderInfo.renderType >= GERBV_RENDER_TYPE_CAIRO_NORMAL);
 
-	cairo_t *cr;
-	cr = gdk_cairo_create (gtk_widget_get_window(widget));
-	cairo_translate (cr, -event->area.x + screen.off_x, -event->area.y + screen.off_y);
+	cairo_translate (cr, screen.off_x, screen.off_y);
 	render_project_to_cairo_target (cr);
-	cairo_destroy (cr);
 
 	/*
 	* Draw Zooming outline if we are in that mode

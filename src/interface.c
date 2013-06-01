@@ -39,6 +39,7 @@
 
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
+#include "gimpruler.h"
 
 #include "gerbv.h"
 #include "main.h"
@@ -916,11 +917,11 @@ interface_create_gui (int req_width, int req_height)
 	label1 = gtk_label_new (_("Rendering: "));
 	gtk_box_pack_start (GTK_BOX (hbox4), label1, FALSE, FALSE, 0);
 
-	render_combobox = gtk_combo_box_new_text ();
+	render_combobox = gtk_combo_box_text_new ();
 	gtk_box_pack_start (GTK_BOX (hbox4), render_combobox, TRUE, TRUE, 0);
 
-	gtk_combo_box_append_text (GTK_COMBO_BOX (render_combobox), _("Normal"));
-	gtk_combo_box_append_text (GTK_COMBO_BOX (render_combobox), _("High quality"));
+	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (render_combobox), _("Normal"));
+	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (render_combobox), _("High quality"));
 	if (screenRenderInfo.renderType >= GERBV_RENDER_TYPE_CAIRO_NORMAL && screenRenderInfo.renderType < GERBV_RENDER_TYPE_MAX)
 	    gtk_combo_box_set_active (GTK_COMBO_BOX (render_combobox), screenRenderInfo.renderType - GERBV_RENDER_TYPE_CAIRO_NORMAL);
 
@@ -994,17 +995,19 @@ interface_create_gui (int req_width, int req_height)
 	main_view_table = gtk_table_new (3, 3, FALSE);
 	gtk_box_pack_start (GTK_BOX (vbox2), main_view_table, TRUE, TRUE, 0);
 
-	hRuler = gtk_hruler_new ();
+	hRuler = gimp_ruler_new (GTK_ORIENTATION_HORIZONTAL);
 	gtk_table_attach (GTK_TABLE (main_view_table), hRuler, 1, 2, 0, 1,
 	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 	                  (GtkAttachOptions) (GTK_FILL), 0, 0);
-	gtk_ruler_set_range (GTK_RULER (hRuler), 0, 100, 8.56051, 1000);
+	gimp_ruler_set_range (GIMP_RULER (hRuler), 0, 100, 1000);
+	gimp_ruler_set_position (GIMP_RULER (hRuler), 8.56051);
 
-	vRuler = gtk_vruler_new ();
+	vRuler = gimp_ruler_new (GTK_ORIENTATION_VERTICAL);
 	gtk_table_attach (GTK_TABLE (main_view_table), vRuler, 0, 1, 1, 2,
 	                  (GtkAttachOptions) (GTK_FILL),
 	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-	gtk_ruler_set_range (GTK_RULER (vRuler), 0, 100, 8.37341, 1000);
+	gimp_ruler_set_range (GIMP_RULER (vRuler), 0, 100, 1000);
+	gimp_ruler_set_position (GIMP_RULER (vRuler), 8.37341);
 
 	drawingarea = gtk_drawing_area_new();
 	gtk_table_attach (GTK_TABLE (main_view_table), drawingarea, 1, 2, 1, 2,
@@ -1032,11 +1035,11 @@ interface_create_gui (int req_width, int req_height)
 	gtk_widget_set_size_request (statusbar_label_left, 130, -1);
 	gtk_label_set_justify ((GtkLabel *) statusbar_label_left, GTK_JUSTIFY_RIGHT);
 	
-	statusUnitComboBox = gtk_combo_box_new_text ();
+	statusUnitComboBox = gtk_combo_box_text_new ();
 	gtk_box_pack_start (GTK_BOX (hbox5), statusUnitComboBox, FALSE, FALSE, 0);
-	gtk_combo_box_append_text (GTK_COMBO_BOX (statusUnitComboBox), _("mil"));
-	gtk_combo_box_append_text (GTK_COMBO_BOX (statusUnitComboBox), _("mm"));
-	gtk_combo_box_append_text (GTK_COMBO_BOX (statusUnitComboBox), _("in"));
+	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (statusUnitComboBox), _("mil"));
+	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (statusUnitComboBox), _("mm"));
+	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (statusUnitComboBox), _("in"));
 
 	statusbar_label_right = gtk_label_new (_(""));
 	gtk_box_pack_start (GTK_BOX (hbox5), statusbar_label_right, TRUE, TRUE, 0);
@@ -1369,8 +1372,8 @@ interface_create_gui (int req_width, int req_height)
 	/*
 	* Connect all events on drawing area 
 	*/    
-	g_signal_connect(drawingarea, "expose_event",
-		       G_CALLBACK(callbacks_drawingarea_expose_event), NULL);
+	g_signal_connect(drawingarea, "draw",
+		       G_CALLBACK(callbacks_drawingarea_draw), NULL);
 	g_signal_connect(drawingarea,"configure_event",
 		       G_CALLBACK(callbacks_drawingarea_configure_event), NULL);
 	g_signal_connect(drawingarea, "motion_notify_event",
@@ -1539,7 +1542,6 @@ interface_get_alert_dialog_response (gchar *primaryText, gchar *secondaryText,
   gtk_container_set_border_width (GTK_CONTAINER (dialog1), 6);
   gtk_window_set_resizable (GTK_WINDOW (dialog1), FALSE);
   gtk_window_set_type_hint (GTK_WINDOW (dialog1), GDK_WINDOW_TYPE_HINT_DIALOG);
-  gtk_dialog_set_has_separator (GTK_DIALOG (dialog1), FALSE);
 
   dialog_vbox1 = gtk_dialog_get_content_area (GTK_DIALOG (dialog1));
 
@@ -1579,13 +1581,13 @@ interface_get_alert_dialog_response (gchar *primaryText, gchar *secondaryText,
 
   cancelbutton1 = gtk_button_new_from_stock (GTK_STOCK_CANCEL);
   gtk_dialog_add_action_widget (GTK_DIALOG (dialog1), cancelbutton1, GTK_RESPONSE_CANCEL);
-  GTK_WIDGET_SET_FLAGS (cancelbutton1, GTK_CAN_DEFAULT);
+  gtk_widget_set_can_default(cancelbutton1, TRUE);
   gtk_widget_grab_default (cancelbutton1);
   gtk_widget_grab_focus (cancelbutton1);
 
   okbutton1 = gtk_button_new_from_stock (GTK_STOCK_OK);
   gtk_dialog_add_action_widget (GTK_DIALOG (dialog1), okbutton1, GTK_RESPONSE_OK);
-  GTK_WIDGET_SET_FLAGS (okbutton1, GTK_CAN_DEFAULT);
+  gtk_widget_set_can_default(okbutton1, TRUE);
 
   gtk_widget_show_all (dialog1);
 
@@ -1633,7 +1635,6 @@ interface_show_alert_dialog (gchar *primaryText, gchar *secondaryText,
   gtk_container_set_border_width (GTK_CONTAINER (dialog1), 6);
   gtk_window_set_resizable (GTK_WINDOW (dialog1), FALSE);
   gtk_window_set_type_hint (GTK_WINDOW (dialog1), GDK_WINDOW_TYPE_HINT_DIALOG);
-  gtk_dialog_set_has_separator (GTK_DIALOG (dialog1), FALSE);
 
   dialog_vbox1 = gtk_dialog_get_content_area (GTK_DIALOG (dialog1));
 
@@ -1672,7 +1673,7 @@ interface_show_alert_dialog (gchar *primaryText, gchar *secondaryText,
 
   okbutton1 = gtk_button_new_from_stock (GTK_STOCK_OK);
   gtk_dialog_add_action_widget (GTK_DIALOG (dialog1), okbutton1, GTK_RESPONSE_OK);
-  GTK_WIDGET_SET_FLAGS (okbutton1, GTK_CAN_DEFAULT);
+  gtk_widget_set_can_default (okbutton1, TRUE);
 
   gtk_widget_show_all (dialog1);
 
@@ -1709,7 +1710,6 @@ interface_show_modify_orientation_dialog (gerbv_user_transformation_t *transform
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 6);
 	gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE);
 	gtk_window_set_type_hint (GTK_WINDOW (dialog), GDK_WINDOW_TYPE_HINT_DIALOG);
-	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
 
 	tableWidget = gtk_table_new (16,3,FALSE);
 	gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), tableWidget, FALSE, FALSE, 0);
@@ -1782,11 +1782,11 @@ interface_show_modify_orientation_dialog (gerbv_user_transformation_t *transform
 	tempWidget = gtk_label_new ("Rotation (degrees):   ");
 	gtk_misc_set_alignment (GTK_MISC (tempWidget), 0.0, 0.5);
 	gtk_table_attach ((GtkTable *) tableWidget, tempWidget,1,2,9,10,GTK_EXPAND|GTK_FILL,0,0,0);
-	spin5 = gtk_combo_box_new_text();
-	gtk_combo_box_append_text ((GtkComboBox *)spin5, "None");
-	gtk_combo_box_append_text ((GtkComboBox *)spin5, "90 deg CCW");
-	gtk_combo_box_append_text ((GtkComboBox *)spin5, "180 deg CCW");
-	gtk_combo_box_append_text ((GtkComboBox *)spin5, "270 deg CCW");
+	spin5 = gtk_combo_box_text_new();
+	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT(spin5), "None");
+	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT(spin5), "90 deg CCW");
+	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT(spin5), "180 deg CCW");
+	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT(spin5), "270 deg CCW");
 	gdouble degreeRotation = transform->rotation/M_PI*180;
 	if ((degreeRotation < 135)&&(degreeRotation >= 45))
 		gtk_combo_box_set_active ((GtkComboBox *)spin5, 1);

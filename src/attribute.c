@@ -456,7 +456,7 @@ attribute_interface_dialog (gerbv_HID_Attribute * attrs,
 		  gtk_widget_set_tooltip_text (widget, attrs[j].help_text);
 		  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 		  
-		  combo = gtk_combo_box_new_text ();
+		  combo = gtk_combo_box_text_new ();
 		  gtk_container_add (GTK_CONTAINER (widget), combo);
 		  g_signal_connect (G_OBJECT (combo), "changed",
 				    G_CALLBACK (enum_changed_cb),
@@ -470,7 +470,7 @@ attribute_interface_dialog (gerbv_HID_Attribute * attrs,
 		  i = 0;
 		  while (attrs[j].enumerations[i])
 		      {
-			  gtk_combo_box_append_text (GTK_COMBO_BOX (combo),
+			  gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo),
 						     attrs[j].enumerations[i]);
 			  i++;
 		      }
