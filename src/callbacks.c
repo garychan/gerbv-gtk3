@@ -615,14 +615,14 @@ callbacks_fullscreen_toggled (GtkMenuItem *menuitem, gpointer user_data)
 void
 callbacks_show_toolbar_toggled (GtkMenuItem *menuitem, gpointer user_data)
 {
-	gtk_widget_set_visible (user_data, GTK_CHECK_MENU_ITEM(menuitem)->active);
+	gtk_widget_set_visible (user_data, gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM(menuitem)));
 }
 
 /* --------------------------------------------------------- */
 void
 callbacks_show_sidepane_toggled (GtkMenuItem *menuitem, gpointer user_data)
 {
-	gtk_widget_set_visible (user_data, GTK_CHECK_MENU_ITEM(menuitem)->active);
+	gtk_widget_set_visible (user_data, gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM(menuitem)));
 }
 
 /* --------------------------------------------------------- */
