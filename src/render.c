@@ -64,7 +64,7 @@
 #include <cairo-xlib.h>
 #endif
 #include <cairo.h>
-#include "draw-gdk.h"
+#include "gerbv-gdk.h"
 #include "draw.h"
 
 #define dprintf if(DEBUG) printf
