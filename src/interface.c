@@ -142,10 +142,8 @@ interface_create_gui (int req_width, int req_height)
 	GtkWidget *rs274x,*drill,*rs274xm,*drillm;
 	
 	GtkWidget *separator1;
-#if GTK_CHECK_VERSION(2,10,0)
 	GtkWidget *print;
 	GtkWidget *separator2;
-#endif
 	GtkWidget *quit;
 
 	GtkWidget *menuitem_edit;
@@ -223,10 +221,8 @@ interface_create_gui (int req_width, int req_height)
 	GtkWidget *toolbutton_revert;
 	GtkWidget *toolbutton_save;
 	GtkWidget *separatortoolitem1;
-#if GTK_CHECK_VERSION(2,10,0)
 	GtkWidget *toolbutton_print;
 	GtkWidget *separatortoolitem2;
-#endif
 	GtkWidget *toolbutton_zoom_in;
 	GtkWidget *toolbutton_zoom_out;
 	GtkWidget *toolbutton_zoom_fit;
@@ -415,7 +411,6 @@ interface_create_gui (int req_width, int req_height)
 	gtk_container_add (GTK_CONTAINER (menuitem_file_menu), separator1);
 	gtk_widget_set_sensitive (separator1, FALSE);
 
-#if GTK_CHECK_VERSION(2,10,0)
 	if (gtk_stock_lookup(GTK_STOCK_PRINT, &stock)) {
 	    gchar new[] = "_Print..."; 
 	    stock.label = new;
@@ -431,7 +426,6 @@ interface_create_gui (int req_width, int req_height)
 	separator2 = gtk_separator_menu_item_new ();
 	gtk_container_add (GTK_CONTAINER (menuitem_file_menu), separator2);
 	gtk_widget_set_sensitive (separator2, FALSE);
-#endif
 	quit = gtk_image_menu_item_new_from_stock (GTK_STOCK_QUIT, NULL);
 	SET_ACCELS_FROM_STOCK (GTK_STOCK_QUIT, ACCEL_FILE_QUIT);
 	gtk_widget_set_tooltip_text (quit, "Quit Gerbv");
@@ -850,14 +844,14 @@ interface_create_gui (int req_width, int req_height)
 
 	separatortoolitem1 = (GtkWidget*) gtk_separator_tool_item_new ();
 	gtk_container_add (GTK_CONTAINER (button_toolbar), separatortoolitem1);
-#if GTK_CHECK_VERSION(2,10,0)
+
 	toolbutton_print = (GtkWidget*) gtk_tool_button_new_from_stock (GTK_STOCK_PRINT);
 	gtk_widget_set_tooltip_text (toolbutton_print, "Print the visible layers");
 	gtk_container_add (GTK_CONTAINER (button_toolbar), toolbutton_print);
 
 	separatortoolitem2 = (GtkWidget*) gtk_separator_tool_item_new ();
 	gtk_container_add (GTK_CONTAINER (button_toolbar), separatortoolitem2);
-#endif
+
 	toolbutton_zoom_in = (GtkWidget*) gtk_tool_button_new_from_stock (GTK_STOCK_ZOOM_IN);
 	gtk_widget_set_tooltip_text (toolbutton_zoom_in, "Zoom in");
 	gtk_container_add (GTK_CONTAINER (button_toolbar), toolbutton_zoom_in);
@@ -1126,11 +1120,9 @@ interface_create_gui (int req_width, int req_height)
 	                  G_CALLBACK (callbacks_generic_save_activate),
 	                  (gpointer) CALLBACKS_SAVE_FILE_DRILLM);
 
-#if GTK_CHECK_VERSION(2,10,0)
 	g_signal_connect ((gpointer) print, "activate",
 	                  G_CALLBACK (callbacks_print_activate),
 	                  NULL);
-#endif
 	g_signal_connect ((gpointer) quit, "activate",
 	                  G_CALLBACK (callbacks_quit_activate),
 	                  NULL);
@@ -1274,11 +1266,9 @@ interface_create_gui (int req_width, int req_height)
 	g_signal_connect ((gpointer) clear_messages_button, "clicked",
 	                  G_CALLBACK (callbacks_clear_messages_button_clicked),
 	                  NULL);
-#if GTK_CHECK_VERSION(2,10,0)
 	g_signal_connect ((gpointer) toolbutton_print, "clicked",
 	                  G_CALLBACK (callbacks_print_activate),
 	                  NULL);
-#endif
 	g_signal_connect ((gpointer) toolbutton_zoom_in, "clicked",
 	                  G_CALLBACK (callbacks_zoom_in_activate),
 	                  NULL);

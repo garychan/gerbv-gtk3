@@ -556,8 +556,6 @@ callbacks_generic_save_activate (GtkMenuItem     *menuitem,
 }
 
 /* --------------------------------------------------------- */
-#if GTK_CHECK_VERSION(2,10,0)
-
 static void
 callbacks_begin_print (GtkPrintOperation *operation, GtkPrintContext   *context,
 		gpointer user_data) {
@@ -610,7 +608,6 @@ callbacks_print_activate (GtkMenuItem *menuitem, gpointer user_data)
 
 	g_object_unref (print);
 }
-#endif /* GTK_CHECK_VERSION(2,10,0) */
 
 /* --------------------------------------------------------- */
 void
@@ -1539,7 +1536,6 @@ callbacks_about_activate                     (GtkMenuItem     *menuitem,
 					  "  gEDA homepage: http://gpleda.org/\n"
 					  "  gEDA Wiki: http://geda.seul.org/wiki/",
 					  VERSION, __DATE__, __TIME__);
-#if GTK_CHECK_VERSION(2,6,0)
 	gchar *license = g_strdup_printf("gerbv -- a Gerber (RS-274/X) viewer.\n\n"
 					 "Copyright (C) 2000-2007 Stefan Petersen\n\n"
 					 "This program is free software: you can redistribute it and/or modify\n"
@@ -1572,22 +1568,6 @@ callbacks_about_activate                     (GtkMenuItem     *menuitem,
 
 	g_free (string);
 	g_free (license);
-#else
-	aboutdialog1 = gtk_message_dialog_new (	GTK_WINDOW (screen.win.topLevelWindow),
-					       GTK_DIALOG_DESTROY_WITH_PARENT,
-					       GTK_MESSAGE_INFO,
-					       GTK_BUTTONS_CLOSE,
-					       string
-					       );
-
-	gtk_window_set_title ( GTK_WINDOW (aboutdialog1), _("About Gerbv"));
-
-	/* Destroy the dialog when the user responds to it (e.g. clicks a button) */
-	g_signal_connect_swapped (aboutdialog1, "response",
-				  G_CALLBACK (gtk_widget_destroy),
-				  aboutdialog1);
-	g_free (string);
-#endif
 
 	gtk_widget_show_all(GTK_WIDGET(aboutdialog1));
 
