@@ -274,7 +274,27 @@ interface_create_gui (int req_width, int req_height)
 	GtkWidget *moveimage;
 
 	GtkWidget *tempImage;
-	
+
+	/* Initialize Gtk3 CSS for our GIMP ruler. This should be in a CSS
+	 * file, but who cares */
+	{
+		GtkCssProvider *provider;
+		GdkDisplay *display;
+		GdkScreen *screen;
+
+		provider = gtk_css_provider_new ();
+		display = gdk_display_get_default ();
+		screen = gdk_display_get_default_screen (display);
+		gtk_style_context_add_provider_for_screen (screen,
+			GTK_STYLE_PROVIDER(provider),
+			GTK_STYLE_PROVIDER_PRIORITY_USER);
+
+		gtk_css_provider_load_from_data (GTK_CSS_PROVIDER (provider),
+			"GimpRuler { background-color: @bg_color; }",
+			-1, NULL);
+		g_object_unref (provider);
+	}
+
 	pointerpixbuf = gdk_pixbuf_new_from_inline(-1, pointer, FALSE, NULL);
 	movepixbuf = gdk_pixbuf_new_from_inline(-1, move, FALSE, NULL);
 	zoompixbuf = gdk_pixbuf_new_from_inline(-1, lzoom, FALSE, NULL);
