@@ -112,6 +112,17 @@ draw_tool_handle(cairo_t *cr, gdouble x, gdouble y) {
 	stroke_tool(cr);
 }
 
+/* Cairo uses a different notion of pixel origin. To get a perfect line
+ * without aliasing, you have to draw from the center of a pixel.
+ *
+ * The coordinate must be rounded to choose the best pixel */
+static void
+choose_nearest_pixel(gdouble *c) {
+	double nearest = rint(*c);
+
+	*c = nearest + 0.5;
+}
+
 gboolean
 render_check_scale_factor_limits (void) {
 	if ((screenRenderInfo.scaleFactorX > 20000)||(screenRenderInfo.scaleFactorY > 20000)) {
@@ -250,19 +261,10 @@ render_calculate_zoom_from_outline(GtkWidget *widget, GdkEventButton *event)
 /* ------------------------------------------------------ */
 void
 render_draw_selection_box_outline(void) {
-	GdkGC *gc;
-	GdkGCValues values;
-	GdkGCValuesMask values_mask;
-	gint x1, y1, x2, y2, dx, dy;
 
-	memset(&values, 0, sizeof(values));
-	values.function = GDK_XOR;
-	if (!screen.zoom_outline_color.pixel)
-	 	gdk_colormap_alloc_color(gdk_colormap_get_system(), &screen.zoom_outline_color, FALSE, TRUE);
-	values.foreground = screen.zoom_outline_color;
-	values_mask = GDK_GC_FUNCTION | GDK_GC_FOREGROUND;
-	gc = gdk_gc_new_with_values(screen.drawing_area->window, &values, values_mask);
-	
+        cairo_t *cr;
+	gdouble x1, y1, x2, y2, dx, dy;
+
 	x1 = MIN(screen.start_x, screen.last_x);
 	y1 = MIN(screen.start_y, screen.last_y);
 	x2 = MAX(screen.start_x, screen.last_x);
@@ -270,8 +272,20 @@ render_draw_selection_box_outline(void) {
 	dx = x2-x1;
 	dy = y2-y1;
 
-	gdk_draw_rectangle(screen.drawing_area->window, gc, FALSE, x1, y1, dx, dy);
-	gdk_gc_unref(gc);
+	choose_nearest_pixel(&x1);
+	choose_nearest_pixel(&y1);
+
+	if (dx > 0)
+		dx -= 1;
+	if (dy > 0)
+		dy -= 1;
+
+        cr = gdk_cairo_create(screen.drawing_area->window);
+
+        cairo_rectangle(cr, x1, y1, dx, dy);
+        stroke_tool(cr);
+
+        cairo_destroy(cr);
 }
 
 /* --------------------------------------------------------- */
@@ -383,17 +397,6 @@ render_trim_point(gdouble *start_x, gdouble *start_y, gdouble last_x, gdouble la
 		if (last_y < max_coord && fabs (dy) > 0.1)
 			*start_x = last_x - (last_y - max_coord) / dy * dx;
 	}
-}
-
-/* Cairo uses a different notion of pixel origin. To get a perfect line
- * without aliasing, you have to draw from the center of a pixel.
- *
- * The coordinate must be rounded to choose the best pixel */
-static void
-choose_nearest_pixel(gdouble *c) {
-	double nearest = rint(*c);
-
-	*c = nearest + 0.5;
 }
 
 /* ------------------------------------------------------ */

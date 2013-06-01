@@ -2884,9 +2884,13 @@ callbacks_drawingarea_expose_event (GtkWidget *widget, GdkEventExpose *event)
 		if (screen.state == IN_ZOOM_OUTLINE) {
 			render_draw_zoom_outline(screen.centered_outline_zoom);
 		}
+		else if (screen.state == IN_SELECTION_DRAG) {
+			render_draw_selection_box_outline();
+		}
 		else if (screen.state == IN_MEASURE) {
 			render_draw_measure_distance();
 		}
+
 		if (screen.tool == MEASURE && screen.state != IN_MEASURE) {
 			render_toggle_measure_line();
 		}
@@ -3050,8 +3054,7 @@ callbacks_drawingarea_motion_notify_event (GtkWidget *widget, GdkEventMotion *ev
 			break;
 		}
 		case IN_SELECTION_DRAG: {
-			if (screen.last_x || screen.last_y)
-				render_draw_selection_box_outline();
+			callbacks_force_expose_event_for_screen ();
 			screen.last_x = x;
 			screen.last_y = y;
 			render_draw_selection_box_outline();
