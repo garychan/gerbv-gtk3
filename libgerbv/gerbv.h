@@ -71,9 +71,7 @@ extern "C" {
 #include <gdk/gdk.h>
 #include <gdk/gdkkeysyms.h>
 
-#ifndef RENDER_USING_GDK
 #include <cairo.h>
-#endif
 
 #define APERTURE_MIN 10
 #define APERTURE_MAX 9999
@@ -767,7 +765,6 @@ gerbv_render_to_pixmap_using_gdk (gerbv_project_t *gerbvProject, GdkPixmap *pixm
 		gerbv_render_info_t *renderInfo, gerbv_selection_info_t *selectionInfo,
 		GdkColor *selectionColor);
 
-#ifndef RENDER_USING_GDK
 void
 gerbv_render_all_layers_to_cairo_target_for_vector_output (gerbv_project_t *gerbvProject,
 		cairo_t *cr, gerbv_render_info_t *renderInfo);
@@ -788,7 +785,6 @@ gerbv_render_cairo_set_scale_and_translation(cairo_t *cr, gerbv_render_info_t *r
 
 void
 gerbv_render_layer_to_cairo_target_without_transforming(cairo_t *cr, gerbv_fileinfo_t *fileInfo, gerbv_render_info_t *renderInfo, gboolean pixelOutput );
-#endif
 
 double
 gerbv_get_tool_diameter(int toolNumber
