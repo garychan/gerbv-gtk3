@@ -287,7 +287,6 @@ attribute_interface_dialog (gerbv_HID_Attribute * attrs,
   GtkWidget *combo;
   GtkWidget *widget;
   int i, j;
-  GtkTooltips *tips;
   int rc = 0;
   int set_auto_uncheck = 0;
   int sen = TRUE;
@@ -311,8 +310,6 @@ attribute_interface_dialog (gerbv_HID_Attribute * attrs,
   auto_uncheck_needed = 0;
   auto_uncheck_widget = NULL;
   auto_uncheck_attr = NULL;
-
-  tips = gtk_tooltips_new ();
 
   dialog = gtk_dialog_new_with_buttons (title,
 					GTK_WINDOW (screen.win.topLevelWindow),
@@ -344,7 +341,7 @@ attribute_interface_dialog (gerbv_HID_Attribute * attrs,
 	      case HID_Label:
 		  widget = gtk_label_new (attrs[j].name);
 		  gtk_box_pack_start (GTK_BOX (vbox), widget, FALSE, FALSE, 0);
-		  gtk_tooltips_set_tip (tips, widget, attrs[j].help_text, NULL);
+		  gtk_widget_set_tooltip_text (widget, attrs[j].help_text);
 		  break;
 		  
 	      case HID_Integer:
@@ -361,7 +358,7 @@ attribute_interface_dialog (gerbv_HID_Attribute * attrs,
 				    intspinner_changed_cb,
 				    &(attrs[j].default_val.int_value), FALSE, NULL);
 		  
-		  gtk_tooltips_set_tip (tips, widget, attrs[j].help_text, NULL);
+		  gtk_widget_set_tooltip_text (widget, attrs[j].help_text);
 		  all_widgets[j] = widget;
 		  
 		  widget = gtk_label_new (attrs[j].name);
@@ -383,7 +380,7 @@ attribute_interface_dialog (gerbv_HID_Attribute * attrs,
 				    dblspinner_changed_cb,
 				    &(attrs[j].default_val.real_value), FALSE, NULL);
 		  
-		  gtk_tooltips_set_tip (tips, widget, attrs[j].help_text, NULL);
+		  gtk_widget_set_tooltip_text (widget, attrs[j].help_text);
 		  all_widgets[j] = widget;
 
 		  widget = gtk_label_new (attrs[j].name);
@@ -398,7 +395,7 @@ attribute_interface_dialog (gerbv_HID_Attribute * attrs,
 		  gtk_box_pack_start (GTK_BOX (hbox), entry, FALSE, FALSE, 0);
 		  gtk_entry_set_text (GTK_ENTRY (entry),
 				      attrs[j].default_val.str_value);
-		  gtk_tooltips_set_tip (tips, entry, attrs[j].help_text, NULL);
+		  gtk_widget_set_tooltip_text (entry, attrs[j].help_text);
 		  g_signal_connect (G_OBJECT (entry), "changed",
 				    G_CALLBACK (entry_changed_cb),
 				    &(attrs[j].default_val.str_value));
@@ -415,7 +412,7 @@ attribute_interface_dialog (gerbv_HID_Attribute * attrs,
 					       TRUE, FALSE, FALSE, 0, set_flag_cb,
 					       &(attrs[j].default_val.int_value),
 					       attrs[j].name);
-		  gtk_tooltips_set_tip (tips, widget, attrs[j].help_text, NULL);
+		  gtk_widget_set_tooltip_text (widget, attrs[j].help_text);
 
 		  /* 
 		   * This is an ugly ugly ugly hack....  If this is
@@ -456,7 +453,7 @@ attribute_interface_dialog (gerbv_HID_Attribute * attrs,
 		   * order for tooltips to work.
 		   */
 		  widget = gtk_event_box_new ();
-		  gtk_tooltips_set_tip (tips, widget, attrs[j].help_text, NULL);
+		  gtk_widget_set_tooltip_text (widget, attrs[j].help_text);
 		  gtk_box_pack_start (GTK_BOX (hbox), widget, FALSE, FALSE, 0);
 		  
 		  combo = gtk_combo_box_new_text ();
@@ -499,7 +496,7 @@ attribute_interface_dialog (gerbv_HID_Attribute * attrs,
 				    G_CALLBACK (entry_changed_cb),
 				    &(attrs[j].default_val.str_value));
 
-		  gtk_tooltips_set_tip (tips, entry, attrs[j].help_text, NULL);
+		  gtk_widget_set_tooltip_text (entry, attrs[j].help_text);
 		  all_widgets[j] = entry;
 		  break;
 
