@@ -3039,7 +3039,7 @@ callbacks_drawingarea_motion_notify_event (GtkWidget *widget, GdkEventMotion *ev
 		}
 		case IN_MEASURE: {
 			/* clear the previous drawn line by drawing over it */
-			render_toggle_measure_line();
+			callbacks_force_expose_event_for_screen ();
 			callbacks_screen2board(&(screen.measure_last_x), &(screen.measure_last_y),
 							x, y);
 			/* screen.last_[xy] are updated to move the ruler pointers */

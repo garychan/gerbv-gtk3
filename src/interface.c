@@ -1444,12 +1444,16 @@ interface_create_gui (int req_width, int req_height)
 	 * These should really be somewhere else.
 	 */
 	GdkColor zoom_outline_color = {0, 50000, 50000, 50000};
-	GdkColor dist_measure_color = {0, 60000, 30000, 65000};       
 	GdkColor selection_color = {0, 65000, 65000, 65000};
+
+	gerbv_color_t tool_color = { 1.0, 1.0, 1.0, 0.8 };
+	gerbv_color_t tool_outline_color = { 0.0, 0.0, 0.0, 0.5 };
 	
 	screen.zoom_outline_color = zoom_outline_color;
-	screen.dist_measure_color = dist_measure_color;
 	screen.selection_color = selection_color;
+
+	screen.tool_color = tool_color;
+	screen.tool_outline_color = tool_outline_color;
 
 	screen.drawing_area = drawingarea;
 	screen.win.hAdjustment = hAdjustment;

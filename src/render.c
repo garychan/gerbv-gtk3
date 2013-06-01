@@ -81,6 +81,37 @@ static void
 render_layer_to_cairo_target_without_transforming(cairo_t *cr, gerbv_fileinfo_t *fileInfo, gerbv_render_info_t *renderInfo );
 */
 
+static void
+stroke_tool(cairo_t *cr) {
+	cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
+
+	cairo_set_line_width(cr, 3.0);
+	cairo_set_source_rgba(cr, screen.tool_outline_color.red,
+		screen.tool_outline_color.green,
+		screen.tool_outline_color.blue,
+		screen.tool_outline_color.alpha);
+	cairo_stroke_preserve(cr);
+
+	cairo_set_line_width(cr, 1.0);
+	cairo_set_source_rgba(cr, screen.tool_color.red,
+		screen.tool_color.green,
+		screen.tool_color.blue,
+		screen.tool_color.alpha);
+	cairo_stroke(cr);
+}
+
+static void
+draw_tool_handle(cairo_t *cr, gdouble x, gdouble y) {
+	cairo_move_to(cr, x, y);
+	cairo_rel_move_to(cr, -10, 0);
+	cairo_rel_line_to(cr, 20, 0);
+
+	cairo_rel_move_to(cr, -10, -10);
+	cairo_rel_line_to(cr, 0, 20);
+
+	stroke_tool(cr);
+}
+
 gboolean
 render_check_scale_factor_limits (void) {
 	if ((screenRenderInfo.scaleFactorX > 20000)||(screenRenderInfo.scaleFactorY > 20000)) {
@@ -354,34 +385,50 @@ render_trim_point(gdouble *start_x, gdouble *start_y, gdouble last_x, gdouble la
 	}
 }
 
+/* Cairo uses a different notion of pixel origin. To get a perfect line
+ * without aliasing, you have to draw from the center of a pixel.
+ *
+ * The coordinate must be rounded to choose the best pixel */
+static void
+choose_nearest_pixel(gdouble *c) {
+	double nearest = rint(*c);
+
+	*c = nearest + 0.5;
+}
+
 /* ------------------------------------------------------ */
 /** Draws/erases measure line
  */
 void
 render_toggle_measure_line(void)
 {
-
-	GdkGC *gc;
-	GdkGCValues values;
-	GdkGCValuesMask values_mask;
+	cairo_t *cr;
 	gdouble start_x, start_y, last_x, last_y;
-	memset(&values, 0, sizeof(values));
-	values.function = GDK_XOR;
-	if (!screen.zoom_outline_color.pixel)
-	 	gdk_colormap_alloc_color(gdk_colormap_get_system(), &screen.zoom_outline_color, FALSE, TRUE);
-	values.foreground = screen.zoom_outline_color;
-	values_mask = GDK_GC_FUNCTION | GDK_GC_FOREGROUND;
-	gc = gdk_gc_new_with_values(screen.drawing_area->window, &values,
-				values_mask);
+
 	render_board2screen(&start_x, &start_y,
 				screen.measure_start_x, screen.measure_start_y); 
 	render_board2screen(&last_x, &last_y,
 				screen.measure_last_x, screen.measure_last_y); 
 	render_trim_point(&start_x, &start_y, last_x, last_y);
 	render_trim_point(&last_x, &last_y, start_x, start_y);
-	gdk_draw_line(screen.drawing_area->window, gc, start_x,
-		  start_y, last_x, last_y);
-	gdk_gc_unref(gc);
+
+	choose_nearest_pixel(&start_x);
+	choose_nearest_pixel(&start_y);
+	choose_nearest_pixel(&last_x);
+	choose_nearest_pixel(&last_y);
+
+	cr = gdk_cairo_create(screen.drawing_area->window);
+
+	cairo_move_to(cr, start_x, start_y);
+	cairo_line_to(cr, last_x, last_y);
+
+	stroke_tool(cr);
+
+	draw_tool_handle(cr, start_x, start_y);
+	draw_tool_handle(cr, last_x, last_y);
+
+	cairo_destroy(cr);
+
 } /* toggle_measure_line */
 
 /* ------------------------------------------------------ */
