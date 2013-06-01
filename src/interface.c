@@ -1342,8 +1342,8 @@ interface_create_gui (int req_width, int req_height)
 	                                                "active", 0,
 	                                                NULL);
 	gtk_tree_view_column_set_min_width  ((GtkTreeViewColumn *)column,25);
-	gtk_signal_connect(GTK_OBJECT(renderer), "toggled",
-		       GTK_SIGNAL_FUNC(callbacks_layer_tree_visibility_button_toggled), NULL);
+	g_signal_connect(renderer, "toggled",
+		       G_CALLBACK(callbacks_layer_tree_visibility_button_toggled), NULL);
 	gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
 
 	renderer = gtk_cell_renderer_pixbuf_new ();
@@ -1370,10 +1370,10 @@ interface_create_gui (int req_width, int req_height)
 	gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
 
 	gtk_tree_view_set_headers_visible   ((GtkTreeView *)tree, FALSE);
-	gtk_signal_connect(GTK_OBJECT(tree), "key-press-event",
-		GTK_SIGNAL_FUNC(callbacks_layer_tree_key_press), NULL);
-	gtk_signal_connect(GTK_OBJECT(tree), "button-press-event",
-		GTK_SIGNAL_FUNC(callbacks_layer_tree_button_press), NULL);
+	g_signal_connect(tree, "key-press-event",
+		G_CALLBACK(callbacks_layer_tree_key_press), NULL);
+	g_signal_connect(tree, "button-press-event",
+		G_CALLBACK(callbacks_layer_tree_button_press), NULL);
 	gtk_container_add (GTK_CONTAINER (scrolledwindow1), tree);
 	
 	GtkTreeSelection *selection;
@@ -1389,24 +1389,24 @@ interface_create_gui (int req_width, int req_height)
 	/*
 	* Connect all events on drawing area 
 	*/    
-	gtk_signal_connect(GTK_OBJECT(drawingarea), "expose_event",
-		       GTK_SIGNAL_FUNC(callbacks_drawingarea_expose_event), NULL);
-	gtk_signal_connect(GTK_OBJECT(drawingarea),"configure_event",
-		       GTK_SIGNAL_FUNC(callbacks_drawingarea_configure_event), NULL);
-	gtk_signal_connect(GTK_OBJECT(drawingarea), "motion_notify_event",
-		       GTK_SIGNAL_FUNC(callbacks_drawingarea_motion_notify_event), NULL);
-	gtk_signal_connect(GTK_OBJECT(drawingarea), "button_press_event",
-		       GTK_SIGNAL_FUNC(callbacks_drawingarea_button_press_event), NULL);
-	gtk_signal_connect(GTK_OBJECT(drawingarea), "button_release_event",
-		       GTK_SIGNAL_FUNC(callbacks_drawingarea_button_release_event), NULL);
-	gtk_signal_connect_after(GTK_OBJECT(mainWindow), "key_press_event",
-		       GTK_SIGNAL_FUNC(callbacks_window_key_press_event), NULL);
-	gtk_signal_connect_after(GTK_OBJECT(mainWindow), "key_release_event",
-		       GTK_SIGNAL_FUNC(callbacks_window_key_release_event), NULL);
-	gtk_signal_connect_after(GTK_OBJECT(mainWindow), "scroll_event",
-		       GTK_SIGNAL_FUNC(callbacks_window_scroll_event), NULL);
-	gtk_signal_connect_after(GTK_OBJECT(mainWindow), "delete_event",
-		       GTK_SIGNAL_FUNC(callbacks_quit_activate), NULL);
+	g_signal_connect(drawingarea, "expose_event",
+		       G_CALLBACK(callbacks_drawingarea_expose_event), NULL);
+	g_signal_connect(drawingarea,"configure_event",
+		       G_CALLBACK(callbacks_drawingarea_configure_event), NULL);
+	g_signal_connect(drawingarea, "motion_notify_event",
+		       G_CALLBACK(callbacks_drawingarea_motion_notify_event), NULL);
+	g_signal_connect(drawingarea, "button_press_event",
+		       G_CALLBACK(callbacks_drawingarea_button_press_event), NULL);
+	g_signal_connect(drawingarea, "button_release_event",
+		       G_CALLBACK(callbacks_drawingarea_button_release_event), NULL);
+	g_signal_connect_after(mainWindow, "key_press_event",
+		       G_CALLBACK(callbacks_window_key_press_event), NULL);
+	g_signal_connect_after(mainWindow, "key_release_event",
+		       G_CALLBACK(callbacks_window_key_release_event), NULL);
+	g_signal_connect_after(mainWindow, "scroll_event",
+		       G_CALLBACK(callbacks_window_scroll_event), NULL);
+	g_signal_connect_after(mainWindow, "delete_event",
+		       G_CALLBACK(callbacks_quit_activate), NULL);
 	
 	gtk_widget_set_events(drawingarea, GDK_EXPOSURE_MASK
 			  | GDK_LEAVE_NOTIFY_MASK
