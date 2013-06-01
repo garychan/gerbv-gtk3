@@ -155,7 +155,7 @@ ghid_category_vbox (GtkWidget * box, const gchar * category_header,
   GtkWidget *vbox, *vbox1, *hbox, *label;
   gchar *s;
 
-  vbox = gtk_vbox_new (FALSE, 0);
+  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   if (pack_start)
     gtk_box_pack_start (GTK_BOX (box), vbox, FALSE, FALSE, 0);
   else
@@ -172,11 +172,11 @@ ghid_category_vbox (GtkWidget * box, const gchar * category_header,
       g_free (s);
     }
 
-  hbox = gtk_hbox_new (FALSE, 0);
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
   label = gtk_label_new ("     ");
   gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
-  vbox1 = gtk_vbox_new (FALSE, box_pad);
+  vbox1 = gtk_box_new (GTK_ORIENTATION_VERTICAL, box_pad);
   gtk_box_pack_start (GTK_BOX (hbox), vbox1, TRUE, TRUE, 0);
 
   if (bottom_pad)
@@ -202,7 +202,7 @@ ghid_spin_button (GtkWidget * box, GtkWidget ** spin_button, gfloat value,
 
   if (string && box)
     {
-      hbox = gtk_hbox_new (FALSE, 0);
+      hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
       gtk_box_pack_start (GTK_BOX (box), hbox, FALSE, FALSE, 2);
       box = hbox;
     }
@@ -319,7 +319,7 @@ attribute_interface_dialog (gerbv_HID_Attribute * attrs,
 					GTK_STOCK_OK, GTK_RESPONSE_OK, NULL);
   gtk_window_set_wmclass (GTK_WINDOW (dialog), "gerbv_attribute_editor", "gerbv");
 
-  main_vbox = gtk_vbox_new (FALSE, 6);
+  main_vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
   gtk_container_set_border_width (GTK_CONTAINER (main_vbox), 6);
   gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), main_vbox);
 
@@ -345,7 +345,7 @@ attribute_interface_dialog (gerbv_HID_Attribute * attrs,
 		  break;
 		  
 	      case HID_Integer:
-		  hbox = gtk_hbox_new (FALSE, 4);
+		  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4);
 		  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 		  
 		  /* 
@@ -366,7 +366,7 @@ attribute_interface_dialog (gerbv_HID_Attribute * attrs,
 		  break;
 		  
 	      case HID_Real:
-		  hbox = gtk_hbox_new (FALSE, 4);
+		  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4);
 		  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 		  
 		  /* 
@@ -388,7 +388,7 @@ attribute_interface_dialog (gerbv_HID_Attribute * attrs,
 		  break;
 		  
 	      case HID_String:
-		  hbox = gtk_hbox_new (FALSE, 4);
+		  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4);
 		  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 		  
 		  entry = gtk_entry_new ();
@@ -445,7 +445,7 @@ attribute_interface_dialog (gerbv_HID_Attribute * attrs,
 		  break;
 		  
 	      case HID_Enum:
-		  hbox = gtk_hbox_new (FALSE, 4);
+		  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4);
 		  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 		  
 		  /* 
