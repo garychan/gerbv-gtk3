@@ -91,7 +91,6 @@ typedef struct {
 	gdouble lastMeasuredY;
     } win;
     
-    gpointer windowSurface;
     gpointer bufferSurface;
     gpointer selectionRenderData;
 

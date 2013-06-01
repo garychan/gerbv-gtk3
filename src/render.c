@@ -479,7 +479,7 @@ void render_selection_layer (void){
 	if (screen.selectionRenderData) 
 		cairo_surface_destroy ((cairo_surface_t *) screen.selectionRenderData);
 	screen.selectionRenderData = 
-		(gpointer) cairo_surface_create_similar ((cairo_surface_t *)screen.windowSurface,
+		gdk_window_create_similar_surface (gtk_widget_get_window(screen.drawing_area),
 		CAIRO_CONTENT_COLOR_ALPHA, screenRenderInfo.displayWidth,
 		screenRenderInfo.displayHeight);
 	if (screen.selectionInfo.type != GERBV_SELECTION_EMPTY) {
@@ -530,15 +530,16 @@ void render_refresh_rendered_image_on_screen (void) {
 		    if (mainProject->file[i]->privateRenderData) 
 			cairo_surface_destroy ((cairo_surface_t *) mainProject->file[i]->privateRenderData);
 		    mainProject->file[i]->privateRenderData = 
-			(gpointer) cairo_surface_create_similar ((cairo_surface_t *)screen.windowSurface,
-			CAIRO_CONTENT_COLOR_ALPHA, screenRenderInfo.displayWidth,
-			screenRenderInfo.displayHeight);
+		        gdk_window_create_similar_surface (gtk_widget_get_window(screen.drawing_area),
+			    CAIRO_CONTENT_COLOR_ALPHA, screenRenderInfo.displayWidth,
+			    screenRenderInfo.displayHeight);
 		    cr= cairo_create(mainProject->file[i]->privateRenderData );
 		    gerbv_render_layer_to_cairo_target (cr, mainProject->file[i], &screenRenderInfo);
 		    dprintf("    .... calling render_image_to_cairo_target on layer %d...\n", i);			
 		    cairo_destroy (cr);
 		}	
 	}
+
 	/* render the selection layer */
 	render_selection_layer();
 	    
@@ -584,10 +585,8 @@ render_create_cairo_buffer_surface () {
 		cairo_surface_destroy (screen.bufferSurface);
 		screen.bufferSurface = NULL;
 	}
-	if (!screen.windowSurface)
-		return 0;
 
-	screen.bufferSurface= cairo_surface_create_similar ((cairo_surface_t *)screen.windowSurface,
+	screen.bufferSurface = gdk_window_create_similar_surface(gtk_widget_get_window(screen.drawing_area),
 	                                    CAIRO_CONTENT_COLOR, screenRenderInfo.displayWidth,
 	                                    screenRenderInfo.displayHeight);
 	return 1;
@@ -710,9 +709,6 @@ render_free_screen_resources (void) {
 	if (screen.bufferSurface)
 		cairo_surface_destroy ((cairo_surface_t *)
 			screen.bufferSurface);
-	if (screen.windowSurface)
-		cairo_surface_destroy ((cairo_surface_t *)
-			screen.windowSurface);
 }
 
 

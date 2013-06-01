@@ -2717,18 +2717,6 @@ callbacks_drawingarea_configure_event (GtkWidget *widget, GdkEventConfigure *eve
 	screenRenderInfo.displayWidth = gdk_window_get_width(gtk_widget_get_window(widget));
 	screenRenderInfo.displayHeight = gdk_window_get_height(gtk_widget_get_window(widget));
 
-	if (screen.windowSurface)
-		cairo_surface_destroy ((cairo_surface_t *)
-			screen.windowSurface);
-
-	cairo_t *cairoTarget = gdk_cairo_create (gtk_widget_get_window(widget));
-	
-	screen.windowSurface = cairo_get_target (cairoTarget);
-	/* increase surface reference by one so it isn't freed when the cairo_t
-	   is destroyed next */
-	screen.windowSurface = cairo_surface_reference (screen.windowSurface);
-	cairo_destroy (cairoTarget);
-
 	/* if this is the first time, go ahead and call autoscale even if we don't
 	   have a model loaded */
 	if ((screenRenderInfo.scaleFactorX < 0.001)||(screenRenderInfo.scaleFactorY < 0.001)) {
