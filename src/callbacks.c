@@ -1880,19 +1880,19 @@ callbacks_switch_to_normal_tool_cursor (gint toolNumber) {
 			cursor = gdk_cursor_new(GDK_FLEUR);
 			gdk_window_set_cursor(gtk_widget_get_window(screen.drawing_area),
 					  cursor);
-			gdk_cursor_destroy(cursor);
+			g_object_unref(cursor);
 			break;
 		case ZOOM:
 			cursor = gdk_cursor_new(GDK_SIZING);
 			gdk_window_set_cursor(gtk_widget_get_window(screen.drawing_area),
 					      cursor);
-			gdk_cursor_destroy(cursor);
+			g_object_unref(cursor);
 			break;
 		case MEASURE:
 			cursor = gdk_cursor_new(GDK_CROSSHAIR);
 			gdk_window_set_cursor(gtk_widget_get_window(screen.drawing_area),
 					  cursor);
-			gdk_cursor_destroy(cursor);
+			g_object_unref(cursor);
 			break;
 		default:
 			break;
@@ -1908,14 +1908,14 @@ callbacks_switch_to_correct_cursor (void) {
 		cursor = gdk_cursor_new(GDK_FLEUR);
 		gdk_window_set_cursor(gtk_widget_get_window(screen.drawing_area),
 				  cursor);
-		gdk_cursor_destroy(cursor);
+		g_object_unref(cursor);
 		return;
 	}
 	else if (screen.state == IN_ZOOM_OUTLINE) {
 		cursor = gdk_cursor_new(GDK_SIZING);
 		gdk_window_set_cursor(gtk_widget_get_window(screen.drawing_area),
 				  cursor);
-		gdk_cursor_destroy(cursor);
+		g_object_unref(cursor);
 		return;
 	}
 	callbacks_switch_to_normal_tool_cursor (screen.tool);
@@ -2946,7 +2946,7 @@ callbacks_drawingarea_button_press_event (GtkWidget *widget, GdkEventButton *eve
 			cursor = gdk_cursor_new(GDK_FLEUR);
 			gdk_window_set_cursor(gtk_widget_get_window(screen.drawing_area),
 					  cursor);
-			gdk_cursor_destroy(cursor);
+			g_object_unref(cursor);
 			break;
 		case 3 :
 			if (screen.tool == POINTER) {
@@ -2976,7 +2976,7 @@ callbacks_drawingarea_button_press_event (GtkWidget *widget, GdkEventButton *eve
 				cursor = gdk_cursor_new(GDK_SIZING);
 				gdk_window_set_cursor(gtk_widget_get_window(screen.drawing_area),
 						  cursor);
-				gdk_cursor_destroy(cursor);
+				g_object_unref(cursor);
 			}
 			break;
 		case 4 : /* Scroll wheel */

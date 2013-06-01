@@ -518,7 +518,7 @@ void render_refresh_rendered_image_on_screen (void) {
 	dprintf("----> Entering redraw_pixmap...\n");
 	cursor = gdk_cursor_new(GDK_WATCH);
 	gdk_window_set_cursor(gtk_widget_get_window(screen.drawing_area), cursor);
-	gdk_cursor_destroy(cursor);
+	g_object_unref(cursor);
 
 	/* 
 	 * This now allows drawing several layers on top of each other.
