@@ -67,9 +67,6 @@ extern "C" {
 #endif
 
 #include <glib.h>
-#include <gtk/gtk.h>
-#include <gdk/gdk.h>
-#include <gdk/gdkkeysyms.h>
 
 #include <cairo.h>
 
@@ -759,11 +756,6 @@ gerbv_render_zoom_to_fit_display (gerbv_project_t *gerbvProject, /*!< the projec
 
 void
 gerbv_render_translate_to_fit_display (gerbv_project_t *gerbvProject, gerbv_render_info_t *renderInfo);
-
-void
-gerbv_render_to_pixmap_using_gdk (gerbv_project_t *gerbvProject, GdkPixmap *pixmap,
-		gerbv_render_info_t *renderInfo, gerbv_selection_info_t *selectionInfo,
-		GdkColor *selectionColor);
 
 void
 gerbv_render_all_layers_to_cairo_target_for_vector_output (gerbv_project_t *gerbvProject,

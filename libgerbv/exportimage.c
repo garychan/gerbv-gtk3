@@ -37,7 +37,6 @@
 #endif
 
 #include <math.h>
-#include <gdk-pixbuf/gdk-pixbuf.h>
 #include <png.h>
 
 #include "gerbv.h"

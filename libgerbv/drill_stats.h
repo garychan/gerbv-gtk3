@@ -29,7 +29,7 @@
 #ifndef DRILL_STATS_H
 #define DRILL_STATS_H
 
-#include <gdk/gdk.h>      /* This imports gboolean type */
+#include <glib.h>      /* This imports gboolean type */
 
 
 /* ===================  Prototypes ================ */

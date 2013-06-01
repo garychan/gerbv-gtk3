@@ -35,7 +35,6 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <glib.h>
-#include <gtk/gtk.h> /* What's this for? */
 
 #ifdef HAVE_STRING_H
 #include <string.h>

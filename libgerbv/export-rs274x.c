@@ -37,7 +37,7 @@
 
 #include <glib/gstdio.h>
 #include "gerbv.h"
-#include "draw-gdk.h"
+#include "draw.h"
 
 /* DEBUG printing.  #define DEBUG 1 in config.h to use this fcn. */
 #define dprintf if(DEBUG) printf

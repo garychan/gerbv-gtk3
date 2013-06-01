@@ -20,31 +20,24 @@
 ##  along with this program; if not, write to the Free Software
 ##  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA
 
+AM_CPPFLAGS = -I$(top_srcdir)/libgerbv
+
 # shared library
-lib_LTLIBRARIES = libgerbv.la
+lib_LTLIBRARIES = libgerbv-gdk.la
 
 # public header file(s)
 pkgincludedir=	$(includedir)/${PACKAGE}-${VERSION}
-pkginclude_HEADERS= gerbv.h
+pkginclude_HEADERS= gerbv-gdk.h
 
 # pkg-config data file
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libgerbv.pc
+pkgconfig_DATA = libgerbv-gdk.pc
 
-libgerbv_la_SOURCES= \
-		amacro.c amacro.h \
-		common.h tooltable.c \
-		draw.c \
-		draw.h \
-		drill.c drill.h \
-		exportimage.c \
-		gerb_file.c gerb_file.h gerb_image.c gerb_image.h gerber.c \
-		gerber.h gerbv.c gerbv.h gerbv_icon.h \
-		pick-and-place.c pick-and-place.h \
-		csv.c csv.h csv_defines.h \
-		gerb_stats.c gerb_stats.h \
-		drill_stats.c drill_stats.h export-rs274x.c \
-		export-drill.c
+libgerbv_gdk_la_SOURCES= \
+		gerbv-gdk.c \
+		gerbv-gdk.h \
+		draw-gdk.c \
+		draw-gdk.h
 
 # libgerbv shared library version.  A fairly strict rule should
 # be followed for when this version is updated.  Those rules,
@@ -70,9 +63,9 @@ libgerbv_la_SOURCES= \
 # 6. If any interfaces have been removed since the last public release, then
 #    set age to 0.
 #
-libgerbv_la_LDFLAGS = -version-info 1:8:0 -no-undefined
+libgerbv_gdk_la_LDFLAGS = -version-info 0:0:0 -no-undefined
 
-EXTRA_DIST=	libgerbv.pc.in
+EXTRA_DIST=	libgerbv-gdk.pc.in
 
 MOSTLYCLEANFILES = *~
 MAINTAINERCLEANFILES = *~ *.o Makefile Makefile.in

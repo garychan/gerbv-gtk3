@@ -388,6 +388,8 @@ AC_OUTPUT(	Makefile \
 		scheme/Makefile \
 		libgerbv/Makefile \
 		libgerbv/libgerbv.pc \
+		libgerbv-gdk/Makefile \
+		libgerbv-gdk/libgerbv-gdk.pc \
 		src/Makefile \
 		win32/Makefile \
 		test/Makefile \

@@ -4,9 +4,9 @@ libdir=@libdir@
 includedir=@includedir@
 pkgincludedir=@includedir@/@PACKAGE@-@VERSION@
 
-Name: libgerbv
-Description: Core library for gerbv
-Requires: glib-2.0 cairo
+Name: libgerbv-gdk
+Description: GDK render library for gerbv
+Requires: glib-2.0 gtk+-2.0 libgerbv
 Version: @VERSION@
-Libs: -L${libdir} -lgerbv
+Libs: -L${libdir} -lgerbv-gdk
 Cflags: -I${pkgincludedir}

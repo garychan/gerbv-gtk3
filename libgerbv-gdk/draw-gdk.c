@@ -41,6 +41,8 @@
 #include <gtk/gtk.h>
 #include "gerbv.h"
 #include "draw-gdk.h"
+#include "draw.h"
+
 
 #undef round
 #define round(x) ceil((double)(x))
