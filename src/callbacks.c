@@ -135,7 +135,7 @@ callbacks_generate_alert_dialog (gchar *primaryText, gchar *secondaryText){
 	                                    NULL);
 	label = gtk_label_new (secondaryText);
 	/* Add the label, and show everything we've added to the dialog. */
-	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox),
+	gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area (GTK_DIALOG(dialog))),
 	                  label);
 	gtk_widget_show_all (dialog);
 	return dialog;
@@ -1113,7 +1113,7 @@ callbacks_analyze_active_gerbers_activate(GtkMenuItem *menuitem,
     
     
     /* Now put notebook into dialog window and show the whole thing */
-    gtk_container_add(GTK_CONTAINER(GTK_DIALOG(analyze_active_gerbers)->vbox),
+    gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(analyze_active_gerbers))),
 		      GTK_WIDGET(notebook));
     
     gtk_widget_show_all(analyze_active_gerbers);
@@ -1445,7 +1445,7 @@ callbacks_analyze_active_drill_activate(GtkMenuItem     *menuitem,
 			     gtk_label_new("Drills used"));
     
     /* Now put notebook into dialog window and show the whole thing */
-    gtk_container_add(GTK_CONTAINER(GTK_DIALOG(analyze_active_drill)->vbox),
+    gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(analyze_active_drill))),
 		      GTK_WIDGET(notebook));
     gtk_widget_show_all(analyze_active_drill);
     gerbv_drill_stats_destroy (stats_report);	
@@ -1607,7 +1607,7 @@ callbacks_bugs_activate (GtkMenuItem     *menuitem,
     gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(bugs_window),
                                           GTK_WIDGET(bugs_label));
     gtk_widget_set_size_request(GTK_WIDGET(bugs_window), 600, 300);
-    gtk_container_add(GTK_CONTAINER(GTK_DIALOG(bugs_dialog)->vbox),
+    gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(bugs_dialog))),
                       GTK_WIDGET(bugs_window));
 
     gtk_widget_show_all(GTK_WIDGET(bugs_dialog));

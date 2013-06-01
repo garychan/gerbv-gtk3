@@ -1562,7 +1562,7 @@ interface_get_alert_dialog_response (gchar *primaryText, gchar *secondaryText,
   gtk_window_set_type_hint (GTK_WINDOW (dialog1), GDK_WINDOW_TYPE_HINT_DIALOG);
   gtk_dialog_set_has_separator (GTK_DIALOG (dialog1), FALSE);
 
-  dialog_vbox1 = GTK_DIALOG (dialog1)->vbox;
+  dialog_vbox1 = gtk_dialog_get_content_area (GTK_DIALOG (dialog1));
 
   hbox1 = gtk_hbox_new (FALSE, 12);
   gtk_box_pack_start (GTK_BOX (dialog_vbox1), hbox1, TRUE, TRUE, 0);
@@ -1595,7 +1595,7 @@ interface_get_alert_dialog_response (gchar *primaryText, gchar *secondaryText,
   }
   gtk_box_pack_start (GTK_BOX (vbox9), hbox2, FALSE, FALSE, 12);
   
-  dialog_action_area1 = GTK_DIALOG (dialog1)->action_area;
+  dialog_action_area1 = gtk_dialog_get_action_area(GTK_DIALOG (dialog1));
   gtk_button_box_set_layout (GTK_BUTTON_BOX (dialog_action_area1), GTK_BUTTONBOX_END);
 
   cancelbutton1 = gtk_button_new_from_stock (GTK_STOCK_CANCEL);
@@ -1656,7 +1656,7 @@ interface_show_alert_dialog (gchar *primaryText, gchar *secondaryText,
   gtk_window_set_type_hint (GTK_WINDOW (dialog1), GDK_WINDOW_TYPE_HINT_DIALOG);
   gtk_dialog_set_has_separator (GTK_DIALOG (dialog1), FALSE);
 
-  dialog_vbox1 = GTK_DIALOG (dialog1)->vbox;
+  dialog_vbox1 = gtk_dialog_get_content_area (GTK_DIALOG (dialog1));
 
   hbox1 = gtk_hbox_new (FALSE, 12);
   gtk_box_pack_start (GTK_BOX (dialog_vbox1), hbox1, TRUE, TRUE, 0);
@@ -1688,7 +1688,7 @@ interface_show_alert_dialog (gchar *primaryText, gchar *secondaryText,
   }
   gtk_box_pack_start (GTK_BOX (vbox9), hbox2, FALSE, FALSE, 12);
   
-  dialog_action_area1 = GTK_DIALOG (dialog1)->action_area;
+  dialog_action_area1 = gtk_dialog_get_action_area (GTK_DIALOG (dialog1));
   gtk_button_box_set_layout (GTK_BUTTON_BOX (dialog_action_area1), GTK_BUTTONBOX_END);
 
   okbutton1 = gtk_button_new_from_stock (GTK_STOCK_OK);
@@ -1733,7 +1733,7 @@ interface_show_modify_orientation_dialog (gerbv_user_transformation_t *transform
 	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
 
 	tableWidget = gtk_table_new (16,3,FALSE);
-	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox), tableWidget, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (dialog))), tableWidget, FALSE, FALSE, 0);
 
 	tempWidget = gtk_label_new (NULL);
 	gtk_label_set_markup (GTK_LABEL (tempWidget), "<span weight=\"bold\">Translation</span>");
