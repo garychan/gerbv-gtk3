@@ -1724,19 +1724,19 @@ void callbacks_update_scrollbar_limits (void){
 	gerbv_render_info_t tempRenderInfo = {0, 0, 0, 0, 3, screenRenderInfo.displayWidth,
 			screenRenderInfo.displayHeight};
 
-	GtkAdjustment *hAdjust = (GtkAdjustment *)screen.win.hAdjustment;
-	GtkAdjustment *vAdjust = (GtkAdjustment *)screen.win.vAdjustment;
+	GtkAdjustment *hAdjust = GTK_ADJUSTMENT(screen.win.hAdjustment);
+	GtkAdjustment *vAdjust = GTK_ADJUSTMENT(screen.win.vAdjustment);
 	gerbv_render_zoom_to_fit_display (mainProject, &tempRenderInfo);
-	hAdjust->lower = tempRenderInfo.lowerLeftX;
-	hAdjust->page_increment = hAdjust->page_size;
-	hAdjust->step_increment = hAdjust->page_size / 10.0;
-	vAdjust->lower = tempRenderInfo.lowerLeftY;
-	vAdjust->page_increment = vAdjust->page_size;
-	vAdjust->step_increment = vAdjust->page_size / 10.0;
-	hAdjust->upper = tempRenderInfo.lowerLeftX + (tempRenderInfo.displayWidth / tempRenderInfo.scaleFactorX);
-	hAdjust->page_size = screenRenderInfo.displayWidth / screenRenderInfo.scaleFactorX;
-	vAdjust->upper = tempRenderInfo.lowerLeftY + (tempRenderInfo.displayHeight / tempRenderInfo.scaleFactorY);
-	vAdjust->page_size = screenRenderInfo.displayHeight / screenRenderInfo.scaleFactorY;
+	gtk_adjustment_set_lower(hAdjust, tempRenderInfo.lowerLeftX);
+	gtk_adjustment_set_page_increment(hAdjust, gtk_adjustment_get_page_size(hAdjust));
+	gtk_adjustment_set_step_increment(hAdjust, gtk_adjustment_get_page_size(hAdjust) / 10.0);
+	gtk_adjustment_set_lower(vAdjust, tempRenderInfo.lowerLeftY);
+	gtk_adjustment_set_page_increment(vAdjust, gtk_adjustment_get_page_size(vAdjust));
+	gtk_adjustment_set_step_increment(vAdjust, gtk_adjustment_get_page_size(vAdjust) / 10.0);
+	gtk_adjustment_set_upper(hAdjust, tempRenderInfo.lowerLeftX + (tempRenderInfo.displayWidth / tempRenderInfo.scaleFactorX));
+	gtk_adjustment_set_page_size(hAdjust, screenRenderInfo.displayWidth / screenRenderInfo.scaleFactorX);
+	gtk_adjustment_set_upper(vAdjust, tempRenderInfo.lowerLeftY + (tempRenderInfo.displayHeight / tempRenderInfo.scaleFactorY));
+	gtk_adjustment_set_page_size(vAdjust, screenRenderInfo.displayHeight / screenRenderInfo.scaleFactorY);
 	callbacks_update_scrollbar_positions ();
 }
 
@@ -1744,21 +1744,25 @@ void callbacks_update_scrollbar_limits (void){
 void callbacks_update_scrollbar_positions (void){
 	gdouble positionX,positionY;
 
+	GtkAdjustment *hAdjust = GTK_ADJUSTMENT(screen.win.hAdjustment);
+	GtkAdjustment *vAdjust = GTK_ADJUSTMENT(screen.win.vAdjustment);
+
 	positionX = screenRenderInfo.lowerLeftX;
-	if (positionX < ((GtkAdjustment *)screen.win.hAdjustment)->lower)
-		positionX = ((GtkAdjustment *)screen.win.hAdjustment)->lower;
-	if (positionX > (((GtkAdjustment *)screen.win.hAdjustment)->upper - ((GtkAdjustment *)screen.win.hAdjustment)->page_size))
-		positionX = (((GtkAdjustment *)screen.win.hAdjustment)->upper - ((GtkAdjustment *)screen.win.hAdjustment)->page_size);
-	gtk_adjustment_set_value ((GtkAdjustment *)screen.win.hAdjustment, positionX);
+	if (positionX < gtk_adjustment_get_lower(hAdjust))
+		positionX = gtk_adjustment_get_lower(hAdjust);
+	if (positionX > (gtk_adjustment_get_upper(hAdjust) - gtk_adjustment_get_page_size(hAdjust)))
+		positionX = gtk_adjustment_get_upper(hAdjust) - gtk_adjustment_get_page_size(hAdjust);
+	gtk_adjustment_set_value (hAdjust, positionX);
 	
-	positionY = ((GtkAdjustment *)screen.win.vAdjustment)->upper - screenRenderInfo.lowerLeftY -
-		((GtkAdjustment *)screen.win.vAdjustment)->page_size +
-		((GtkAdjustment *)screen.win.vAdjustment)->lower;
-	if (positionY < ((GtkAdjustment *)screen.win.vAdjustment)->lower)
-		positionY = ((GtkAdjustment *)screen.win.vAdjustment)->lower;
-	if (positionY > (((GtkAdjustment *)screen.win.vAdjustment)->upper - ((GtkAdjustment *)screen.win.vAdjustment)->page_size))
-		positionY = (((GtkAdjustment *)screen.win.vAdjustment)->upper - ((GtkAdjustment *)screen.win.vAdjustment)->page_size);
-	gtk_adjustment_set_value ((GtkAdjustment *)screen.win.vAdjustment, positionY);
+	positionY = gtk_adjustment_get_upper(vAdjust) -
+		screenRenderInfo.lowerLeftY -
+		gtk_adjustment_get_page_size(vAdjust) +
+		gtk_adjustment_get_lower(vAdjust);
+	if (positionY < gtk_adjustment_get_lower(vAdjust))
+		positionY = gtk_adjustment_get_lower(vAdjust);
+	if (positionY > (gtk_adjustment_get_upper(vAdjust) - gtk_adjustment_get_page_size(vAdjust)))
+		positionY = gtk_adjustment_get_upper(vAdjust) - gtk_adjustment_get_page_size(vAdjust);
+	gtk_adjustment_set_value (vAdjust, positionY);
 }
 
 /* --------------------------------------------------------- */
@@ -1793,8 +1797,9 @@ void callbacks_vadjustment_value_changed (GtkAdjustment *adjustment, gpointer us
 	/* make sure we're actually using the scrollbar to make sure we don't reset
 	   lowerLeftY during a scrollbar redraw during something else */
 	if (screen.state == SCROLLBAR) {
-		screenRenderInfo.lowerLeftY = adjustment->upper -
-			(gtk_adjustment_get_value (adjustment) + adjustment->page_size) + adjustment->lower;
+		screenRenderInfo.lowerLeftY = gtk_adjustment_get_upper(adjustment) -
+			(gtk_adjustment_get_value (adjustment) + gtk_adjustment_get_page_size(adjustment))
+			+ gtk_adjustment_get_lower(adjustment);
 	}
 }
 
