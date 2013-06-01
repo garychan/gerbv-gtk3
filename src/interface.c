@@ -273,7 +273,6 @@ interface_create_gui (int req_width, int req_height)
 	GtkWidget *drawingarea, *hAdjustment, *vAdjustment, *hScrollbar, *vScrollbar;
 	
 	GtkAccelGroup *accel_group;
-	GtkTooltips *tooltips;
 
 	/* Inline icons */
 	GdkPixbuf *zoompixbuf;
@@ -290,7 +289,6 @@ interface_create_gui (int req_width, int req_height)
 	zoompixbuf = gdk_pixbuf_new_from_inline(-1, lzoom, FALSE, NULL);
 	measurepixbuf = gdk_pixbuf_new_from_inline(-1, ruler, FALSE, NULL);
 
-	tooltips = gtk_tooltips_new();
 	accel_group = gtk_accel_group_new ();
 
 	mainWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -314,25 +312,25 @@ interface_create_gui (int req_width, int req_height)
 
 	new = gtk_image_menu_item_new_from_stock (GTK_STOCK_NEW, NULL);
 	SET_ACCELS_FROM_STOCK (GTK_STOCK_NEW, ACCEL_FILE_NEW);
-	gtk_tooltips_set_tip (tooltips, new, "Close all layers and start a new project", NULL);
+	gtk_widget_set_tooltip_text (new, "Close all layers and start a new project");
 	gtk_container_add (GTK_CONTAINER (menuitem_file_menu), new);
 
 	open_project = gtk_image_menu_item_new_with_mnemonic (_("_Open project..."));
 	gtk_container_add (GTK_CONTAINER (menuitem_file_menu), open_project);
-	gtk_tooltips_set_tip (tooltips, open_project, "Open an existing Gerbv project", NULL);
+	gtk_widget_set_tooltip_text (open_project, "Open an existing Gerbv project");
 	image33 = gtk_image_new_from_stock (GTK_STOCK_OPEN, GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (open_project), image33);
 
 	save = gtk_image_menu_item_new_with_mnemonic (_("Save project"));
 	screen.win.curFileMenuItem1 = save;
-	gtk_tooltips_set_tip (tooltips, save, "Save the current project", NULL);
+	gtk_widget_set_tooltip_text (save, "Save the current project");
 	tempImage = gtk_image_new_from_stock (GTK_STOCK_SAVE, GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (save), tempImage);
 	gtk_container_add (GTK_CONTAINER (menuitem_file_menu), save);
 
 	save_as = gtk_image_menu_item_new_with_mnemonic (_("Save project as..."));
 	screen.win.curFileMenuItem2 = save_as;
-	gtk_tooltips_set_tip (tooltips, save_as, "Save the current project to a new file", NULL);
+	gtk_widget_set_tooltip_text (save_as, "Save the current project to a new file");
 	tempImage = gtk_image_new_from_stock (GTK_STOCK_SAVE_AS, GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (save_as), tempImage);
 	gtk_container_add (GTK_CONTAINER (menuitem_file_menu), save_as);
@@ -340,7 +338,7 @@ interface_create_gui (int req_width, int req_height)
 	revert = gtk_image_menu_item_new_from_stock (GTK_STOCK_REVERT_TO_SAVED, NULL);
 	screen.win.curFileMenuItem3 = revert;
 	SET_ACCELS_FROM_STOCK (GTK_STOCK_REVERT_TO_SAVED, ACCEL_FILE_REVERT);
-	gtk_tooltips_set_tip (tooltips, revert, "Reload all layers", NULL);
+	gtk_widget_set_tooltip_text (revert, "Reload all layers");
 	gtk_container_add (GTK_CONTAINER (menuitem_file_menu), revert);
 
 	/* File menu items dealing individual layers. */
@@ -351,17 +349,17 @@ interface_create_gui (int req_width, int req_height)
 	open_layer = gtk_menu_item_new_with_mnemonic (_("Open _layer(s)..."));
 	gtk_accel_map_add_entry (ACCEL_FILE_OPEN_LAYER_PATH, ACCEL_FILE_OPEN_LAYER_KEY, ACCEL_FILE_OPEN_LAYER_MOD);
 	gtk_container_add (GTK_CONTAINER (menuitem_file_menu), open_layer);
-	gtk_tooltips_set_tip (tooltips, open_layer, "Open Gerber, drill, or pick and place file(s)", NULL);
+	gtk_widget_set_tooltip_text (open_layer, "Open Gerber, drill, or pick and place file(s)");
 
 	save_layer = gtk_menu_item_new_with_mnemonic (_("_Save active layer"));
 	screen.win.curFileMenuItem4 = save_layer;
-	gtk_tooltips_set_tip (tooltips, save_layer, "Save the active layer", NULL);
+	gtk_widget_set_tooltip_text (save_layer, "Save the active layer");
 	gtk_accel_map_add_entry (ACCEL_FILE_SAVE_LAYER_PATH, ACCEL_FILE_SAVE_LAYER_KEY, ACCEL_FILE_SAVE_LAYER_MOD);
 	gtk_container_add (GTK_CONTAINER (menuitem_file_menu), save_layer);
 	
 	save_as_layer = gtk_menu_item_new_with_mnemonic (_("Save active layer _as..."));
 	screen.win.curFileMenuItem5 = save_as_layer;
-	gtk_tooltips_set_tip (tooltips, save_as_layer, "Save the active layer to a new file", NULL);
+	gtk_widget_set_tooltip_text (save_as_layer, "Save the active layer to a new file");
 	gtk_accel_map_add_entry (ACCEL_FILE_SAVE_LAYER_AS_PATH, ACCEL_FILE_SAVE_LAYER_AS_KEY, ACCEL_FILE_SAVE_LAYER_AS_MOD);
 	gtk_container_add (GTK_CONTAINER (menuitem_file_menu), save_as_layer);
 
@@ -372,7 +370,7 @@ interface_create_gui (int req_width, int req_height)
 
 	menuitem_file_export = gtk_menu_item_new_with_mnemonic (_("_Export"));
 	screen.win.curFileMenuItem6 = menuitem_file_export;
-	gtk_tooltips_set_tip (tooltips, menuitem_file_export, "Export all visible layers to a new format", NULL);
+	gtk_widget_set_tooltip_text (menuitem_file_export, "Export all visible layers to a new format");
 	gtk_container_add (GTK_CONTAINER (menuitem_file_menu), menuitem_file_export);
 
 	menuitem_file_export_menu = gtk_menu_new ();
@@ -382,35 +380,35 @@ interface_create_gui (int req_width, int req_height)
 
 	png = gtk_menu_item_new_with_mnemonic (_("P_NG..."));
 	gtk_container_add (GTK_CONTAINER (menuitem_file_export_menu), png);
-	gtk_tooltips_set_tip (tooltips, png, _("Export project to a PNG file..."), NULL);
+	gtk_widget_set_tooltip_text (png, _("Export project to a PNG file..."));
 	
 	pdf = gtk_menu_item_new_with_mnemonic (_("P_DF..."));
 	gtk_container_add (GTK_CONTAINER (menuitem_file_export_menu), pdf);
-	gtk_tooltips_set_tip (tooltips, pdf, _("Export project to a PDF file..."), NULL);
+	gtk_widget_set_tooltip_text (pdf, _("Export project to a PDF file..."));
 
 	svg = gtk_menu_item_new_with_mnemonic (_("_SVG..."));
 	gtk_container_add (GTK_CONTAINER (menuitem_file_export_menu), svg);
-	gtk_tooltips_set_tip (tooltips, svg, _("Export project to a SVG file"), NULL);
+	gtk_widget_set_tooltip_text (svg, _("Export project to a SVG file"));
 	
 	postscript = gtk_menu_item_new_with_mnemonic (_("_PostScript..."));
 	gtk_container_add (GTK_CONTAINER (menuitem_file_export_menu), postscript);
-	gtk_tooltips_set_tip (tooltips, postscript, _("Export project to a PostScript file"), NULL);
+	gtk_widget_set_tooltip_text (postscript, _("Export project to a PostScript file"));
 
 	rs274x = gtk_menu_item_new_with_mnemonic (_("RS-274X (_Gerber)..."));
 	gtk_container_add (GTK_CONTAINER (menuitem_file_export_menu), rs274x);
-	gtk_tooltips_set_tip (tooltips, rs274x, _("Export layer to a RS-274X (Gerber) file"), NULL);
+	gtk_widget_set_tooltip_text (rs274x, _("Export layer to a RS-274X (Gerber) file"));
 	
 	drill = gtk_menu_item_new_with_mnemonic (_("_Excellon drill..."));
 	gtk_container_add (GTK_CONTAINER (menuitem_file_export_menu), drill);
-	gtk_tooltips_set_tip (tooltips, drill, _("Export layer to an Excellon drill file"), NULL);
+	gtk_widget_set_tooltip_text (drill, _("Export layer to an Excellon drill file"));
 	
 	rs274xm = gtk_menu_item_new_with_mnemonic (_("RS-274X Merge (Gerber)..."));
 	gtk_container_add (GTK_CONTAINER (menuitem_file_export_menu), rs274xm);
-	gtk_tooltips_set_tip (tooltips, rs274xm, _("Export (merge visible gerber layers) to a RS-274X (Gerber) file"), NULL);
+	gtk_widget_set_tooltip_text (rs274xm, _("Export (merge visible gerber layers) to a RS-274X (Gerber) file"));
 	
 	drillm = gtk_menu_item_new_with_mnemonic (_("Excellon drill Merge..."));
 	gtk_container_add (GTK_CONTAINER (menuitem_file_export_menu), drillm);
-	gtk_tooltips_set_tip (tooltips, drillm, _("Export (merge visible drill layers) to an Excellon drill file"), NULL);	
+	gtk_widget_set_tooltip_text (drillm, _("Export (merge visible drill layers) to an Excellon drill file"));	
 	
 	/* File menu items dealing with printing and quitting. */
 	separator1 = gtk_separator_menu_item_new ();
@@ -427,7 +425,7 @@ interface_create_gui (int req_width, int req_height)
 	print = gtk_image_menu_item_new_from_stock (GTK_STOCK_PRINT, NULL);
 	screen.win.curFileMenuItem7 = print;
 	SET_ACCELS_FROM_STOCK (GTK_STOCK_PRINT, ACCEL_FILE_PRINT);
-	gtk_tooltips_set_tip (tooltips, print, "Print the visible layers", NULL);
+	gtk_widget_set_tooltip_text (print, "Print the visible layers");
 	gtk_container_add (GTK_CONTAINER (menuitem_file_menu), print);
 
 	separator2 = gtk_separator_menu_item_new ();
@@ -436,7 +434,7 @@ interface_create_gui (int req_width, int req_height)
 #endif
 	quit = gtk_image_menu_item_new_from_stock (GTK_STOCK_QUIT, NULL);
 	SET_ACCELS_FROM_STOCK (GTK_STOCK_QUIT, ACCEL_FILE_QUIT);
-	gtk_tooltips_set_tip (tooltips, quit, "Quit Gerbv", NULL);
+	gtk_widget_set_tooltip_text (quit, "Quit Gerbv");
 	gtk_container_add (GTK_CONTAINER (menuitem_file_menu), quit);
 
 	/* --- Next menu item (Edit) --- */
@@ -451,14 +449,14 @@ interface_create_gui (int req_width, int req_height)
 
 	properties_selected = gtk_image_menu_item_new_with_mnemonic (_("Display _properties of selected object(s)"));
 	SET_ACCELS_FROM_STOCK (GTK_STOCK_PROPERTIES, ACCEL_EDIT_PROPERTIES);
-	gtk_tooltips_set_tip (tooltips, properties_selected, "Examine the properties of the selected object", NULL);
+	gtk_widget_set_tooltip_text (properties_selected, "Examine the properties of the selected object");
 	tempImage = gtk_image_new_from_stock (GTK_STOCK_PROPERTIES, GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (properties_selected), tempImage);
 	gtk_container_add (GTK_CONTAINER (menuitem_edit_menu), properties_selected);
 
 	delete_selected = gtk_image_menu_item_new_with_mnemonic (_("_Delete selected object(s)"));
 	SET_ACCELS_FROM_STOCK (GTK_STOCK_REMOVE, ACCEL_EDIT_DELETE);
-	gtk_tooltips_set_tip (tooltips, delete_selected, "Delete selected objects", NULL);
+	gtk_widget_set_tooltip_text (delete_selected, "Delete selected objects");
 	tempImage = gtk_image_new_from_stock (GTK_STOCK_DELETE, GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (delete_selected), tempImage);
 	gtk_container_add (GTK_CONTAINER (menuitem_edit_menu), delete_selected);
@@ -466,19 +464,19 @@ interface_create_gui (int req_width, int req_height)
 	/*   Include these after they are coded.
 	tempMenuItem = gtk_image_menu_item_new_with_label ("Edit object properties");
 	gtk_menu_shell_append ((GtkMenuShell *)screen.win.drawWindowPopupMenu, tempMenuItem);
-	gtk_tooltips_set_tip (tooltips, tempMenuItem, "Edit the properties of the selected object", NULL);
+	gtk_widget_set_tooltip_text (tempMenuItem, "Edit the properties of the selected object");
 	g_signal_connect ((gpointer) tempMenuItem, "activate",
 	                  G_CALLBACK (callbacks_edit_object_properties_clicked), NULL);
 
 	tempMenuItem = gtk_image_menu_item_new_with_label ("Move object(s)");
 	gtk_menu_shell_append ((GtkMenuShell *)screen.win.drawWindowPopupMenu, tempMenuItem);
-	gtk_tooltips_set_tip (tooltips, tempMenuItem, "Move the selected object(s)",NULL);
+	gtk_widget_set_tooltip_text (tempMenuItem, "Move the selected object(s)");
 	g_signal_connect ((gpointer) tempMenuItem, "activate",
 	                  G_CALLBACK (callbacks_move_objects_clicked), NULL);
 
 	tempMenuItem = gtk_image_menu_item_new_with_label ("Reduce area");
 	gtk_menu_shell_append ((GtkMenuShell *)screen.win.drawWindowPopupMenu, tempMenuItem);
-	gtk_tooltips_set_tip (tooltips, tempMenuItem, "Reduce the area of the object (e.g. to prevent component floating)",NULL);
+	gtk_widget_set_tooltip_text (tempMenuItem, "Reduce the area of the object (e.g. to prevent component floating)");
 	g_signal_connect ((gpointer) tempMenuItem, "activate",
 	                  G_CALLBACK (callbacks_reduce_object_area_clicked), NULL);
 	*/
@@ -497,19 +495,19 @@ interface_create_gui (int req_width, int req_height)
 	
 	view_fullscreen = gtk_check_menu_item_new_with_mnemonic (_("Fullscr_een"));
 	gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (view_fullscreen), FALSE);
-	gtk_tooltips_set_tip (tooltips, view_fullscreen, "Toggle between fullscreen and normal view", NULL);
+	gtk_widget_set_tooltip_text (view_fullscreen, "Toggle between fullscreen and normal view");
 	SET_ACCELS (ACCEL_VIEW_FULLSCREEN);
 	gtk_container_add (GTK_CONTAINER (menuitem_view_menu), view_fullscreen);
 
 	show_toolbar = gtk_check_menu_item_new_with_mnemonic (_("Show _Toolbar"));
 	gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (show_toolbar), TRUE);
-	gtk_tooltips_set_tip (tooltips, show_toolbar, "Toggle visibility of the toolbar", NULL);
+	gtk_widget_set_tooltip_text (show_toolbar, "Toggle visibility of the toolbar");
 	SET_ACCELS (ACCEL_VIEW_TOOLBAR);
 	gtk_container_add (GTK_CONTAINER (menuitem_view_menu), show_toolbar);
 
 	show_sidepane = gtk_check_menu_item_new_with_mnemonic (_("Show _Sidepane"));
 	gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (show_sidepane), TRUE);
-	gtk_tooltips_set_tip (tooltips, show_sidepane, "Toggle visibility of the sidepane", NULL);
+	gtk_widget_set_tooltip_text (show_sidepane, "Toggle visibility of the sidepane");
 	SET_ACCELS (ACCEL_VIEW_SIDEPANE);
 	gtk_container_add (GTK_CONTAINER (menuitem_view_menu), show_sidepane);
 
@@ -571,16 +569,16 @@ interface_create_gui (int req_width, int req_height)
 
 	zoom_in = gtk_image_menu_item_new_from_stock (GTK_STOCK_ZOOM_IN, NULL);
 	SET_ACCELS_FROM_STOCK (GTK_STOCK_ZOOM_IN, ACCEL_VIEW_ZOOM_IN);
-	gtk_tooltips_set_tip (tooltips, zoom_in, "Zoom in", NULL);
+	gtk_widget_set_tooltip_text (zoom_in, "Zoom in");
 	gtk_container_add (GTK_CONTAINER (menuitem_view_menu), zoom_in);
 	                        
 	zoom_out = gtk_image_menu_item_new_from_stock (GTK_STOCK_ZOOM_OUT, NULL);
 	SET_ACCELS_FROM_STOCK (GTK_STOCK_ZOOM_OUT, ACCEL_VIEW_ZOOM_OUT);
-	gtk_tooltips_set_tip (tooltips, zoom_out, "Zoom out", NULL);
+	gtk_widget_set_tooltip_text (zoom_out, "Zoom out");
 	gtk_container_add (GTK_CONTAINER (menuitem_view_menu), zoom_out);
 	                        
 	fit_to_window = gtk_image_menu_item_new_from_stock (GTK_STOCK_ZOOM_FIT, NULL);
-	gtk_tooltips_set_tip (tooltips, fit_to_window, "Zoom to fit all visible layers in the window", NULL);
+	gtk_widget_set_tooltip_text (fit_to_window, "Zoom to fit all visible layers in the window");
 	SET_ACCELS_FROM_STOCK (GTK_STOCK_ZOOM_FIT, ACCEL_VIEW_ZOOM_FIT);
 	gtk_container_add (GTK_CONTAINER (menuitem_view_menu), fit_to_window);
 	                        
@@ -589,7 +587,7 @@ interface_create_gui (int req_width, int req_height)
 	gtk_widget_set_sensitive (separator5, FALSE);
 	
 	backgroundColor = gtk_menu_item_new_with_mnemonic ("Change background color");
-	gtk_tooltips_set_tip (tooltips, backgroundColor, "Change the background color", NULL);
+	gtk_widget_set_tooltip_text (backgroundColor, "Change the background color");
 	gtk_container_add (GTK_CONTAINER (menuitem_view_menu), backgroundColor);
 
 	{	// rendering submenu
@@ -673,39 +671,39 @@ interface_create_gui (int req_width, int req_height)
 	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem_layer), menuitem_layer_menu);
 
 	layer_visibility = gtk_menu_item_new_with_mnemonic ("Toggle _visibility");
-	gtk_tooltips_set_tip (tooltips, layer_visibility, "Toggles the visibility of the layer currently selected in the sidepane", NULL);
+	gtk_widget_set_tooltip_text (layer_visibility, "Toggles the visibility of the layer currently selected in the sidepane");
 	gtk_container_add (GTK_CONTAINER (menuitem_layer_menu), layer_visibility);
 
 	layer_invert = gtk_menu_item_new_with_mnemonic ("_Invert color");
-	gtk_tooltips_set_tip (tooltips, layer_invert, "Invert the display polarity of the layer currently selected in the sidepane", NULL);
+	gtk_widget_set_tooltip_text (layer_invert, "Invert the display polarity of the layer currently selected in the sidepane");
 	gtk_container_add (GTK_CONTAINER (menuitem_layer_menu), layer_invert);
 
 	layer_color = gtk_menu_item_new_with_mnemonic (_("_Change color"));
 	SET_ACCELS (ACCEL_LAYER_COLOR);
-	gtk_tooltips_set_tip (tooltips, layer_color, "Change the display color of the layer currently selected in the sidepane", NULL);
+	gtk_widget_set_tooltip_text (layer_color, "Change the display color of the layer currently selected in the sidepane");
 	gtk_container_add (GTK_CONTAINER (menuitem_layer_menu), layer_color);
 
 	layer_reload = gtk_menu_item_new_with_mnemonic (_("_Reload layer"));
-	gtk_tooltips_set_tip (tooltips, layer_reload, "Reload the layer from disk", NULL);
+	gtk_widget_set_tooltip_text (layer_reload, "Reload the layer from disk");
 	gtk_container_add (GTK_CONTAINER (menuitem_layer_menu), layer_reload);
 
 	layer_orientation = gtk_menu_item_new_with_mnemonic (_("Modify _orientation"));
 	gtk_container_add (GTK_CONTAINER (menuitem_layer_menu), layer_orientation);
-	gtk_tooltips_set_tip (tooltips, layer_orientation, "Translate, scale, rotate, or mirror the layer currently selected in the sidepane", NULL);
+	gtk_widget_set_tooltip_text (layer_orientation, "Translate, scale, rotate, or mirror the layer currently selected in the sidepane");
 
 	layer_format = gtk_menu_item_new_with_mnemonic (_("Edit file _format"));
 	gtk_container_add (GTK_CONTAINER (menuitem_layer_menu), layer_format);
-	gtk_tooltips_set_tip (tooltips, layer_format, "View and edit the numerical format used to parse this layer currently selected in the sidepane", NULL);
+	gtk_widget_set_tooltip_text (layer_format, "View and edit the numerical format used to parse this layer currently selected in the sidepane");
 
 	layer_up = gtk_image_menu_item_new_with_mnemonic (_("Move u_p"));
-	gtk_tooltips_set_tip (tooltips, layer_up, "Move the layer currently selected in the sidepane one step up", NULL);
+	gtk_widget_set_tooltip_text (layer_up, "Move the layer currently selected in the sidepane one step up");
 	tempImage = gtk_image_new_from_stock (GTK_STOCK_GO_UP, GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (layer_up), tempImage);
 	SET_ACCELS (ACCEL_LAYER_UP);
 	gtk_container_add (GTK_CONTAINER (menuitem_layer_menu), layer_up);
 
 	layer_down = gtk_image_menu_item_new_with_mnemonic (_("Move dow_n"));
-	gtk_tooltips_set_tip (tooltips, layer_down, "Move the layer currently selected in the sidepane one step down", NULL);
+	gtk_widget_set_tooltip_text (layer_down, "Move the layer currently selected in the sidepane one step down");
 	tempImage = gtk_image_new_from_stock (GTK_STOCK_GO_DOWN, GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (layer_down), tempImage);
 	SET_ACCELS (ACCEL_LAYER_DOWN);
@@ -713,7 +711,7 @@ interface_create_gui (int req_width, int req_height)
 
 	layer_remove = gtk_image_menu_item_new_with_mnemonic (_("_Delete"));
 	gtk_container_add (GTK_CONTAINER (menuitem_layer_menu), layer_remove);
-	gtk_tooltips_set_tip (tooltips, layer_remove, "Remove the layer currently selected in the sidepane", NULL);
+	gtk_widget_set_tooltip_text (layer_remove, "Remove the layer currently selected in the sidepane");
 	tempImage = gtk_image_new_from_stock (GTK_STOCK_REMOVE, GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (layer_remove), tempImage);
 
@@ -734,24 +732,24 @@ interface_create_gui (int req_width, int req_height)
 	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem_analyze), menuitem_analyze_menu);
 
 	analyze_active_gerbers = gtk_menu_item_new_with_mnemonic (_("Analyze visible _Gerber layers"));
-	gtk_tooltips_set_tip (tooltips, analyze_active_gerbers, 
-			      "Examine a detailed anaylsis of the contents of all visible Gerber layers", NULL);
+	gtk_widget_set_tooltip_text (analyze_active_gerbers, 
+			      "Examine a detailed anaylsis of the contents of all visible Gerber layers");
 	gtk_container_add (GTK_CONTAINER (menuitem_analyze_menu), analyze_active_gerbers);
 
 	analyze_active_drill = gtk_menu_item_new_with_mnemonic (_("Analyze visible _drill layers"));
-	gtk_tooltips_set_tip (tooltips, analyze_active_drill, 
-			      "Examine a detailed anaylsis of the contents of all visible drill layers", NULL);
+	gtk_widget_set_tooltip_text (analyze_active_drill, 
+			      "Examine a detailed anaylsis of the contents of all visible drill layers");
 	gtk_container_add (GTK_CONTAINER (menuitem_analyze_menu), analyze_active_drill);
 
 	analyze_benchmark = gtk_menu_item_new_with_mnemonic (_("_Benchmark (1 min)"));
-	gtk_tooltips_set_tip (tooltips, analyze_benchmark, 
-			      "Benchmark different rendering methods. Will make the application unresponsive for 1 minute!", NULL);
+	gtk_widget_set_tooltip_text (analyze_benchmark, 
+			      "Benchmark different rendering methods. Will make the application unresponsive for 1 minute!");
 	gtk_container_add (GTK_CONTAINER (menuitem_analyze_menu), analyze_benchmark);
 
 
 	/* Wait and add in for 2.1??
 	control_gerber_options = gtk_menu_item_new_with_mnemonic (_("Control Gerber options..."));
-	gtk_tooltips_set_tip (tooltips, control_gerber_options, "Set which Gerber features should be displayed", NULL);
+	gtk_widget_set_tooltip_text (control_gerber_options, "Set which Gerber features should be displayed");
 	gtk_container_add (GTK_CONTAINER (menuitem_analyze_menu), control_gerber_options);
 	*/
 	menuitem_tools = gtk_menu_item_new_with_mnemonic (_("_Tools"));
@@ -768,7 +766,7 @@ interface_create_gui (int req_width, int req_height)
 	*/
 	SET_ACCELS (ACCEL_TOOLS_POINTER);
 	gtk_container_add (GTK_CONTAINER (menuitem_tools_menu), pointer_tool);
-	gtk_tooltips_set_tip (tooltips, pointer_tool, "Select objects on the screen", NULL);
+	gtk_widget_set_tooltip_text (pointer_tool, "Select objects on the screen");
 	pan_tool = gtk_image_menu_item_new_with_mnemonic ("Pa_n Tool");
 	/*
 	tempImage = gtk_image_new_from_pixbuf (movepixbuf);
@@ -776,7 +774,7 @@ interface_create_gui (int req_width, int req_height)
 	*/
 	SET_ACCELS (ACCEL_TOOLS_PAN);
 	gtk_container_add (GTK_CONTAINER (menuitem_tools_menu), pan_tool);
-	gtk_tooltips_set_tip (tooltips, pan_tool, "Pan by left clicking and dragging", NULL);
+	gtk_widget_set_tooltip_text (pan_tool, "Pan by left clicking and dragging");
 
 	zoom_tool = gtk_image_menu_item_new_with_mnemonic (_("_Zoom Tool"));
 	/*
@@ -785,7 +783,7 @@ interface_create_gui (int req_width, int req_height)
 	*/
 	SET_ACCELS (ACCEL_TOOLS_ZOOM);
 	gtk_container_add (GTK_CONTAINER (menuitem_tools_menu), zoom_tool);
-	gtk_tooltips_set_tip (tooltips, zoom_tool, "Zoom by left clicking or dragging", NULL);
+	gtk_widget_set_tooltip_text (zoom_tool, "Zoom by left clicking or dragging");
 
 	measure_tool = gtk_image_menu_item_new_with_mnemonic (_("_Measure Tool"));
 	/*
@@ -794,7 +792,7 @@ interface_create_gui (int req_width, int req_height)
 	*/
 	SET_ACCELS (ACCEL_TOOLS_MEASURE);
 	gtk_container_add (GTK_CONTAINER (menuitem_tools_menu), measure_tool);
-	gtk_tooltips_set_tip (tooltips, measure_tool, "Measure distances on the screen", NULL);
+	gtk_widget_set_tooltip_text (measure_tool, "Measure distances on the screen");
 
 	menuitem_help = gtk_menu_item_new_with_mnemonic (_("_Help"));
 	gtk_container_add (GTK_CONTAINER (menubar1), menuitem_help);
@@ -807,18 +805,18 @@ interface_create_gui (int req_width, int req_height)
 	/* Not ready for 2.0
 	online_manual = gtk_menu_item_new_with_mnemonic (_("_Online Manual..."));
 	gtk_container_add (GTK_CONTAINER (menuitem_help_menu), online_manual);
-	gtk_tooltips_set_tip (tooltips, online_manual, "View the online help documentation", NULL);
+	gtk_widget_set_tooltip_text (online_manual, "View the online help documentation");
 	*/
 
 	about = gtk_image_menu_item_new_with_mnemonic (_("_About Gerbv..."));
 	gtk_container_add (GTK_CONTAINER (menuitem_help_menu), about);
-	gtk_tooltips_set_tip (tooltips, about, "View information about gerbv", NULL);
+	gtk_widget_set_tooltip_text (about, "View information about gerbv");
 	image34 = gtk_image_new_from_stock (GTK_STOCK_DIALOG_INFO, GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (about), image34);
 
 	bugs_menuitem = gtk_menu_item_new_with_mnemonic (_("Known _bugs in this version..."));
 	gtk_container_add (GTK_CONTAINER (menuitem_help_menu), bugs_menuitem);
-	gtk_tooltips_set_tip (tooltips, bugs_menuitem, "View list of known gerbv bugs", NULL);	
+	gtk_widget_set_tooltip_text (bugs_menuitem, "View list of known gerbv bugs");	
 
 	/* Create toolbar (button bar) beneath main menu */
 	toolbar_hbox = gtk_hbox_new (FALSE, 0);
@@ -835,41 +833,41 @@ interface_create_gui (int req_width, int req_height)
 	/*tmp_toolbar_icon_size = gtk_toolbar_get_icon_size (GTK_TOOLBAR (button_toolbar));*/
 
 	toolbutton_new = (GtkWidget*) gtk_tool_button_new_from_stock (GTK_STOCK_NEW);
-	gtk_tooltips_set_tip (tooltips, toolbutton_new, "Close all layers and start a new project", NULL);
+	gtk_widget_set_tooltip_text (toolbutton_new, "Close all layers and start a new project");
 	gtk_container_add (GTK_CONTAINER (button_toolbar), toolbutton_new);
 
 	toolbutton_open = (GtkWidget*) gtk_tool_button_new_from_stock (GTK_STOCK_OPEN);
-	gtk_tooltips_set_tip (tooltips, toolbutton_open, "Open a previously saved gerbv project", NULL);
+	gtk_widget_set_tooltip_text (toolbutton_open, "Open a previously saved gerbv project");
 	gtk_container_add (GTK_CONTAINER (button_toolbar), toolbutton_open);
 
 	toolbutton_revert = (GtkWidget*) gtk_tool_button_new_from_stock (GTK_STOCK_REVERT_TO_SAVED);
-	gtk_tooltips_set_tip (tooltips, toolbutton_revert, "Reload all layers in project", NULL);
+	gtk_widget_set_tooltip_text (toolbutton_revert, "Reload all layers in project");
 	gtk_container_add (GTK_CONTAINER (button_toolbar), toolbutton_revert);
 
 	toolbutton_save = (GtkWidget*) gtk_tool_button_new_from_stock (GTK_STOCK_SAVE);
-	gtk_tooltips_set_tip (tooltips, toolbutton_save, "Save the current project", NULL);
+	gtk_widget_set_tooltip_text (toolbutton_save, "Save the current project");
 	gtk_container_add (GTK_CONTAINER (button_toolbar), toolbutton_save);
 
 	separatortoolitem1 = (GtkWidget*) gtk_separator_tool_item_new ();
 	gtk_container_add (GTK_CONTAINER (button_toolbar), separatortoolitem1);
 #if GTK_CHECK_VERSION(2,10,0)
 	toolbutton_print = (GtkWidget*) gtk_tool_button_new_from_stock (GTK_STOCK_PRINT);
-	gtk_tooltips_set_tip (tooltips, toolbutton_print, "Print the visible layers", NULL);
+	gtk_widget_set_tooltip_text (toolbutton_print, "Print the visible layers");
 	gtk_container_add (GTK_CONTAINER (button_toolbar), toolbutton_print);
 
 	separatortoolitem2 = (GtkWidget*) gtk_separator_tool_item_new ();
 	gtk_container_add (GTK_CONTAINER (button_toolbar), separatortoolitem2);
 #endif
 	toolbutton_zoom_in = (GtkWidget*) gtk_tool_button_new_from_stock (GTK_STOCK_ZOOM_IN);
-	gtk_tooltips_set_tip (tooltips, toolbutton_zoom_in, "Zoom in", NULL);
+	gtk_widget_set_tooltip_text (toolbutton_zoom_in, "Zoom in");
 	gtk_container_add (GTK_CONTAINER (button_toolbar), toolbutton_zoom_in);
 
 	toolbutton_zoom_out = (GtkWidget*) gtk_tool_button_new_from_stock (GTK_STOCK_ZOOM_OUT);
-	gtk_tooltips_set_tip (tooltips, toolbutton_zoom_out, "Zoom out", NULL);
+	gtk_widget_set_tooltip_text (toolbutton_zoom_out, "Zoom out");
 	gtk_container_add (GTK_CONTAINER (button_toolbar), toolbutton_zoom_out);
 
 	toolbutton_zoom_fit = (GtkWidget*) gtk_tool_button_new_from_stock (GTK_STOCK_ZOOM_FIT);
-	gtk_tooltips_set_tip (tooltips, toolbutton_zoom_fit, "Zoom to fit all visible layers in the window", NULL);
+	gtk_widget_set_tooltip_text (toolbutton_zoom_fit, "Zoom to fit all visible layers in the window");
 	gtk_container_add (GTK_CONTAINER (button_toolbar), toolbutton_zoom_fit);
 
 /* Turn these on later when we have icons for these buttons */
@@ -893,13 +891,13 @@ interface_create_gui (int req_width, int req_height)
 	pointerimage = gtk_image_new_from_pixbuf(pointerpixbuf);
 	gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(toggletoolbutton_pointer),
 					pointerimage);
-	gtk_tooltips_set_tip (tooltips, toggletoolbutton_pointer, "Select objects on the screen", NULL);	
+	gtk_widget_set_tooltip_text (toggletoolbutton_pointer, "Select objects on the screen");	
 	gtk_container_add (GTK_CONTAINER (button_toolbar), toggletoolbutton_pointer);
 	toggletoolbutton_pan = (GtkWidget*) gtk_toggle_tool_button_new();
 	moveimage = gtk_image_new_from_pixbuf(movepixbuf);
 	gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(toggletoolbutton_pan),
 					moveimage);
-	gtk_tooltips_set_tip (tooltips, toggletoolbutton_pan, "Pan by left clicking and dragging", NULL);
+	gtk_widget_set_tooltip_text (toggletoolbutton_pan, "Pan by left clicking and dragging");
 	gtk_container_add (GTK_CONTAINER (button_toolbar), toggletoolbutton_pan);
 	
 
@@ -907,14 +905,14 @@ interface_create_gui (int req_width, int req_height)
 	zoomimage = gtk_image_new_from_pixbuf(zoompixbuf);
 	gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(toggletoolbutton_zoom),
 					zoomimage);
-	gtk_tooltips_set_tip (tooltips, toggletoolbutton_zoom, "Zoom by left clicking or dragging", NULL);
+	gtk_widget_set_tooltip_text (toggletoolbutton_zoom, "Zoom by left clicking or dragging");
 	gtk_container_add (GTK_CONTAINER (button_toolbar), toggletoolbutton_zoom);
 
 	toggletoolbutton_measure = (GtkWidget*) gtk_toggle_tool_button_new();
 	measureimage = gtk_image_new_from_pixbuf(measurepixbuf);
 	gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(toggletoolbutton_measure),
 					measureimage);
-	gtk_tooltips_set_tip (tooltips, toggletoolbutton_measure, "Measure distances on the screen", NULL);
+	gtk_widget_set_tooltip_text (toggletoolbutton_measure, "Measure distances on the screen");
 	gtk_container_add (GTK_CONTAINER (button_toolbar), toggletoolbutton_measure);
 	
 	hpaned1 = gtk_hpaned_new ();
@@ -1465,8 +1463,6 @@ interface_create_gui (int req_width, int req_height)
 	screen.win.toolButtonZoom = toggletoolbutton_zoom;
 	screen.win.toolButtonMeasure = toggletoolbutton_measure;
 
-	/* make sure tooltips show on gtk <2.12 systems */
-	gtk_tooltips_enable (tooltips);
 	/* 
 	* Good defaults according to Ales. Gives aspect ratio of 1.3333...
 	*/
