@@ -56,11 +56,6 @@
 
 #include "gerbv.h"
 #include "gerber.h"
-#ifdef RENDER_USING_GDK
-  #include "draw-gdk.h"
-#else
-  #include "draw.h"
-#endif
 
 #include "csv.h"
 #include "pick-and-place.h"
