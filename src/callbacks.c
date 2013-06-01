@@ -2878,63 +2878,61 @@ callbacks_drawingarea_expose_event (GtkWidget *widget, GdkEventExpose *event)
 		gdk_pixmap_unref(new_pixmap);
 		gdk_gc_unref(gc);
 
-		/*
-		* Draw Zooming outline if we are in that mode
-		*/
-		if (screen.state == IN_ZOOM_OUTLINE) {
-			render_draw_zoom_outline(screen.centered_outline_zoom);
-		}
-		else if (screen.state == IN_SELECTION_DRAG) {
-			render_draw_selection_box_outline();
-		}
-		else if (screen.state == IN_MEASURE) {
-			render_draw_measure_distance();
-		}
-
-		if (screen.tool == MEASURE && screen.state != IN_MEASURE) {
-			render_toggle_measure_line();
-		}
- 
 		gdk_colormap_free_colors(gdk_colormap_get_system(), &bg, 1);
-		return FALSE;
 	}
+	else {
+		cairo_t *cr;
+		int width, height;
+		int x_off=0, y_off=0;
+		GdkDrawable *drawable = widget->window;
+		GdkVisual *visual;
 
-	cairo_t *cr;
-	int width, height;
-	int x_off=0, y_off=0;
-	GdkDrawable *drawable = widget->window;
-	GdkVisual *visual;
-
-	if (GDK_IS_WINDOW(widget->window)) {
-	      /* query the window's backbuffer if it has one */
-		GdkWindow *window = GDK_WINDOW(widget->window);
-	      gdk_window_get_internal_paint_info (window,
-	                                          &drawable, &x_off, &y_off);
-	}
-	visual = gdk_drawable_get_visual (drawable);
-	gdk_drawable_get_size (drawable, &width, &height);
+		if (GDK_IS_WINDOW(widget->window)) {
+		      /* query the window's backbuffer if it has one */
+			GdkWindow *window = GDK_WINDOW(widget->window);
+		      gdk_window_get_internal_paint_info (window,
+		                                          &drawable, &x_off, &y_off);
+		}
+		visual = gdk_drawable_get_visual (drawable);
+		gdk_drawable_get_size (drawable, &width, &height);
 
 #if defined(WIN32) || defined(QUARTZ)
-	/* FIXME */
-	cr = gdk_cairo_create (GDK_WINDOW(widget->window));
+		/* FIXME */
+		cr = gdk_cairo_create (GDK_WINDOW(widget->window));
 #else      
-	cairo_surface_t *buffert;
+		cairo_surface_t *buffert;
 	
-	buffert = (gpointer) cairo_xlib_surface_create (GDK_DRAWABLE_XDISPLAY (drawable),
-	                                          GDK_DRAWABLE_XID (drawable),
-	                                          GDK_VISUAL_XVISUAL (visual),
-	                                          event->area.width, event->area.height);
-	cr = cairo_create (buffert);
+		buffert = (gpointer) cairo_xlib_surface_create (GDK_DRAWABLE_XDISPLAY (drawable),
+	        	                                  GDK_DRAWABLE_XID (drawable),
+		                                          GDK_VISUAL_XVISUAL (visual),
+		                                          event->area.width, event->area.height);
+		cr = cairo_create (buffert);
 #endif
-	cairo_translate (cr, -event->area.x + screen.off_x, -event->area.y + screen.off_y);
-	render_project_to_cairo_target (cr);
-	cairo_destroy (cr);
+		cairo_translate (cr, -event->area.x + screen.off_x, -event->area.y + screen.off_y);
+		render_project_to_cairo_target (cr);
+		cairo_destroy (cr);
 #if !defined(WIN32) && !defined(QUARTZ)
-	cairo_surface_destroy (buffert);
+		cairo_surface_destroy (buffert);
 #endif
+	}
 
-	if (screen.tool == MEASURE)
+	/*
+	* Draw Zooming outline if we are in that mode
+	*/
+	if (screen.state == IN_ZOOM_OUTLINE) {
+		render_draw_zoom_outline(screen.centered_outline_zoom);
+	}
+	else if (screen.state == IN_SELECTION_DRAG) {
+		render_draw_selection_box_outline();
+	}
+	else if (screen.state == IN_MEASURE) {
+		render_draw_measure_distance();
+	}
+
+	if (screen.tool == MEASURE && screen.state != IN_MEASURE) {
 		render_toggle_measure_line();
+	}
+ 
 	return FALSE;
 }
 
