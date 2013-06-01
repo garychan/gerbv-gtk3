@@ -56,13 +56,6 @@
 #include "interface.h"
 #include "render.h"
 
-#ifdef WIN32
-#include <cairo-win32.h>
-#elif QUARTZ
-#include <cairo-quartz.h>
-#else
-#include <cairo-xlib.h>
-#endif
 #include <cairo.h>
 #include "gerbv-gdk.h"
 #include "draw.h"
