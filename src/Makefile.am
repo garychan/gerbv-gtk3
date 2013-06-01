@@ -20,7 +20,7 @@
 ##  along with this program; if not, write to the Free Software
 ##  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA
 
-AM_CPPFLAGS = -I$(top_srcdir)/libgerbv -I$(top_srcdir)/libgerbv-gdk
+AM_CPPFLAGS = -I$(top_srcdir)/libgerbv
 
 # main program
 bin_PROGRAMS = gerbv
@@ -37,8 +37,8 @@ gerbv_SOURCES = \
 		interface.h render.c render.h \
 		icons.h
 
-gerbv_LDADD = ../libgerbv/libgerbv.la ../libgerbv-gdk/libgerbv-gdk.la
-gerbv_DEPENDENCIES = ../libgerbv/libgerbv.la ../libgerbv-gdk/libgerbv-gdk.la
+gerbv_LDADD = ../libgerbv/libgerbv.la
+gerbv_DEPENDENCIES = ../libgerbv/libgerbv.la
 
 # If we are building on win32, then compile in some icons for the
 # desktop and application toolbar

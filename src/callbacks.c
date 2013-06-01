@@ -60,8 +60,6 @@
 #include "attribute.h"
 #include "render.h"
 
-#include "gerbv-gdk.h"
-
 #include "draw.h"
 
 
@@ -121,6 +119,17 @@ static void show_no_layers_warning (void) {
 		"<b>No layers are currently loaded. A layer must be loaded first.</b>");
 	callbacks_update_statusbar();
 }
+
+/* --------------------------------------------------------- */
+
+static void
+refresh_view(void) {
+	g_assert(screenRenderInfo.renderType >= GERBV_RENDER_TYPE_CAIRO_NORMAL);
+
+	render_recreate_composite_surface (screen.drawing_area);
+	callbacks_force_expose_event_for_screen ();
+}
+
 
 /* --------------------------------------------------------- */
 GtkWidget *
@@ -642,13 +651,8 @@ callbacks_toggle_layer_visibility_activate (GtkMenuItem *menuitem, gpointer user
 		render_clear_selection_buffer();
 
 	    callbacks_update_layer_tree ();
-		if (screenRenderInfo.renderType <= GERBV_RENDER_TYPE_GDK_XOR) {
-			render_refresh_rendered_image_on_screen();
-		}
-		else {
-			render_recreate_composite_surface (screen.drawing_area);
-			callbacks_force_expose_event_for_screen ();
-		}
+
+		refresh_view();
 	}
 }
 
@@ -1650,12 +1654,15 @@ callbacks_render_type_changed () {
 	if (isChanging)
 		return;
 
-	isChanging = TRUE;
 	gerbv_render_types_t type = screenRenderInfo.renderType;
+
+	g_assert(type >= GERBV_RENDER_TYPE_CAIRO_NORMAL);
+
+	isChanging = TRUE;
 	GtkCheckMenuItem *check_item = screen.win.menu_view_render_group[type];
 	dprintf ("%s():  type = %d, check_item = %p\n", __FUNCTION__, type, check_item);
 	gtk_check_menu_item_set_active (check_item, TRUE);
-	gtk_combo_box_set_active (screen.win.sidepaneRenderComboBox, type);
+	gtk_combo_box_set_active (screen.win.sidepaneRenderComboBox, type - GERBV_RENDER_TYPE_CAIRO_NORMAL);
 
 	render_refresh_rendered_image_on_screen();
 	isChanging = FALSE;
@@ -1829,13 +1836,7 @@ callbacks_layer_tree_visibility_button_toggled (GtkCellRendererToggle *cell_rend
 		render_clear_selection_buffer();
 
 	      callbacks_update_layer_tree ();
-		if (screenRenderInfo.renderType <= GERBV_RENDER_TYPE_GDK_XOR) {
-			render_refresh_rendered_image_on_screen();
-		}
-		else {
-			render_recreate_composite_surface (screen.drawing_area);
-			callbacks_force_expose_event_for_screen ();
-		}
+		refresh_view();
 	}
 }
 
@@ -2023,13 +2024,7 @@ callbacks_remove_layer_button_clicked  (GtkButton *button, gpointer   user_data)
 	      callbacks_update_layer_tree ();
 	      callbacks_select_row (0);
 
-		if (screenRenderInfo.renderType <= GERBV_RENDER_TYPE_GDK_XOR) {
-			render_refresh_rendered_image_on_screen();
-		}
-		else {
-			render_recreate_composite_surface (screen.drawing_area);
-			callbacks_force_expose_event_for_screen ();
-		}
+		refresh_view();
 	}
 }
 
@@ -2053,13 +2048,7 @@ callbacks_move_layer_down_button_clicked  (GtkButton *button, gpointer   user_da
 		gerbv_change_layer_order (mainProject, index, index + 1);
 	      callbacks_update_layer_tree ();
 	      callbacks_select_row (index + 1);
-		if (screenRenderInfo.renderType <= GERBV_RENDER_TYPE_GDK_XOR) {
-			render_refresh_rendered_image_on_screen ();
-		}
-		else {
-			render_recreate_composite_surface (screen.drawing_area);
-			callbacks_force_expose_event_for_screen ();
-		}
+		refresh_view();
 	}
 }
 
@@ -2082,13 +2071,7 @@ callbacks_move_layer_up_button_clicked  (GtkButton *button, gpointer   user_data
 		gerbv_change_layer_order (mainProject, index, index - 1);
 		callbacks_update_layer_tree ();
 		callbacks_select_row (index - 1);
-		if (screenRenderInfo.renderType <= GERBV_RENDER_TYPE_GDK_XOR) {
-			render_refresh_rendered_image_on_screen();
-		}
-		else {
-			render_recreate_composite_surface (screen.drawing_area);
-			callbacks_force_expose_event_for_screen ();
-		}
+		refresh_view();
 	}
 }
 
@@ -2110,13 +2093,7 @@ void callbacks_layer_tree_row_inserted (GtkTreeModel *tree_model, GtkTreePath  *
 				oldPosition--;
 			gerbv_change_layer_order (mainProject, oldPosition, newPosition);
 
-			if (screenRenderInfo.renderType <= GERBV_RENDER_TYPE_GDK_XOR) {
-				render_refresh_rendered_image_on_screen();
-			}
-			else {
-				render_recreate_composite_surface (screen.drawing_area);
-				callbacks_force_expose_event_for_screen ();
-			}
+			refresh_view();
 			/* select the new line */
 			GtkTreeSelection *selection;
 			GtkTreeIter iter;
@@ -2627,24 +2604,7 @@ void
 callbacks_support_benchmark (gerbv_render_info_t *renderInfo) {
 	int i;
 	time_t start, now;
-	GdkPixmap *renderedPixmap = gdk_pixmap_new (NULL, renderInfo->displayWidth,
-								renderInfo->displayHeight, 24);
 								
-	// start by running the GDK (fast) rendering test
-	i = 0;
-	start = time(NULL);
-	now = start;
-	while( now - 30 < start) {
-		i++;
-		dprintf("Benchmark():  Starting redraw #%d\n", i);
-		gerbv_render_to_pixmap_using_gdk (mainProject, renderedPixmap, renderInfo, NULL, NULL);
-		now = time(NULL);
-		dprintf("Elapsed time = %ld seconds\n", (long int) (now - start));
-	}
-	g_message("FAST (=GDK) mode benchmark: %d redraws in %ld seconds (%g redraws/second)\n",
-		      i, (long int) (now - start), (double) i / (double)(now - start));
-	gdk_pixmap_unref(renderedPixmap);
-	
 	// run the cairo (normal) render mode
 	i = 0;
 	start = time(NULL);
@@ -2781,68 +2741,13 @@ callbacks_drawingarea_configure_event (GtkWidget *widget, GdkEventConfigure *eve
 gboolean
 callbacks_drawingarea_expose_event (GtkWidget *widget, GdkEventExpose *event)
 {
-	if (screenRenderInfo.renderType <= GERBV_RENDER_TYPE_GDK_XOR) {
-		GdkPixmap *new_pixmap;
-		GdkGC *gc = gdk_gc_new(gtk_widget_get_window(widget));
-		GdkColor bg;
+	g_assert(screenRenderInfo.renderType >= GERBV_RENDER_TYPE_CAIRO_NORMAL);
 
-		bg.pixel = 0;
-		bg.red = (guint16) (mainProject->background.red * 65535);
-		bg.green = (guint16) (mainProject->background.green * 65535);
-		bg.blue = (guint16) (mainProject->background.blue * 65535);
-
-		gdk_colormap_alloc_color(gdk_colormap_get_system(), &bg, FALSE, TRUE);
-
-		/*
-		* Create a pixmap with default background
-		*/
-		new_pixmap = gdk_pixmap_new(gtk_widget_get_window(widget),
-					widget->allocation.width,
-					widget->allocation.height,
-					-1);
-
-		gdk_gc_set_foreground(gc, &bg);
-
-		gdk_draw_rectangle(new_pixmap, gc, TRUE, 
-			       event->area.x, event->area.y,
-			       event->area.width, event->area.height);
-
-		/*
-		* Copy gerber pixmap onto background if we have one to copy.
-		* Do translation at the same time.
-		*/
-		if (screen.pixmap != NULL) {
-		gdk_draw_pixmap(new_pixmap,
-				widget->style->fg_gc[GTK_WIDGET_STATE (widget)],
-				screen.pixmap, 
-				event->area.x - screen.off_x, 
-				event->area.y - screen.off_y, 
-				event->area.x, event->area.y,
-				event->area.width, event->area.height);
-		}
-
-		/*
-		* Draw the whole thing onto screen
-		*/
-		gdk_draw_pixmap(gtk_widget_get_window(widget),
-			    widget->style->fg_gc[GTK_WIDGET_STATE (widget)],
-			    new_pixmap,
-			    event->area.x, event->area.y,
-			    event->area.x, event->area.y,
-			    event->area.width, event->area.height);
-
-		gdk_pixmap_unref(new_pixmap);
-		gdk_gc_unref(gc);
-
-		gdk_colormap_free_colors(gdk_colormap_get_system(), &bg, 1);
-	}
-	else {
-		cairo_t *cr;
-		cr = gdk_cairo_create (gtk_widget_get_window(widget));
-		cairo_translate (cr, -event->area.x + screen.off_x, -event->area.y + screen.off_y);
-		render_project_to_cairo_target (cr);
-		cairo_destroy (cr);
-	}
+	cairo_t *cr;
+	cr = gdk_cairo_create (gtk_widget_get_window(widget));
+	cairo_translate (cr, -event->area.x + screen.off_x, -event->area.y + screen.off_y);
+	render_project_to_cairo_target (cr);
+	cairo_destroy (cr);
 
 	/*
 	* Draw Zooming outline if we are in that mode
@@ -3245,7 +3150,7 @@ callbacks_update_statusbar_measured_distance (gdouble dx, gdouble dy){
 /* --------------------------------------------------------- */
 void
 callbacks_sidepane_render_type_combo_box_changed (GtkComboBox *widget, gpointer user_data) {
-	int type = gtk_combo_box_get_active (widget);
+	int type = gtk_combo_box_get_active (widget) + GERBV_RENDER_TYPE_CAIRO_NORMAL;
 	
 	dprintf ("%s():  type = %d\n", __FUNCTION__, type);
 

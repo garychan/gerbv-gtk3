@@ -682,6 +682,12 @@ set_render_type(scheme *sc, pointer args)
     car_el = sc->vptr->pair_car(args);
 
     r = sc->vptr->ivalue (car_el);
+
+    if (r <= GERBV_RENDER_TYPE_GDK_XOR)
+        r = GERBV_RENDER_TYPE_CAIRO_NORMAL;
+    else if (r > GERBV_RENDER_TYPE_CAIRO_HIGH_QUALITY)
+        r = GERBV_RENDER_TYPE_CAIRO_HIGH_QUALITY;
+
     dprintf ("%s():  Setting render type to %d\n", __FUNCTION__, r);
     interface_set_render_type (r);
 

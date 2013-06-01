@@ -46,7 +46,6 @@
 #include "interface.h"
 #include "render.h"
 
-#include "draw-gdk.h"
 #include "draw.h"
 
 #include "gerbv_icon.h"
@@ -174,7 +173,7 @@ interface_create_gui (int req_width, int req_height)
 	GtkWidget *backgroundColor;
 	GtkWidget *menuitem_view_render, *menuitem_view_render_menu;
 	GSList *menu_view_render_group;
-	GtkWidget *render_fast, *render_fast_xor, *render_normal, *render_hq;
+	GtkWidget *render_normal, *render_hq;
 	GtkWidget *menuitem_view_unit, *menuitem_view_unit_menu;
 	GSList *menu_view_unit_group;
 	GtkWidget *unit_mil, *unit_mm, *unit_in;
@@ -594,14 +593,6 @@ interface_create_gui (int req_width, int req_height)
 
 		menu_view_render_group = NULL;
 
-		render_fast = gtk_radio_menu_item_new_with_mnemonic (menu_view_render_group, _("_Fast"));
-		menu_view_render_group = gtk_radio_menu_item_get_group (GTK_RADIO_MENU_ITEM (render_fast));
-		gtk_container_add (GTK_CONTAINER (menuitem_view_render_menu), render_fast);
-
-		render_fast_xor = gtk_radio_menu_item_new_with_mnemonic (menu_view_render_group, _("Fast (_XOR)"));
-		menu_view_render_group = gtk_radio_menu_item_get_group (GTK_RADIO_MENU_ITEM (render_fast_xor));
-		gtk_container_add (GTK_CONTAINER (menuitem_view_render_menu), render_fast_xor);
-
 		render_normal = gtk_radio_menu_item_new_with_mnemonic (menu_view_render_group, _("_Normal"));
 		menu_view_render_group = gtk_radio_menu_item_get_group (GTK_RADIO_MENU_ITEM (render_normal));
 		gtk_container_add (GTK_CONTAINER (menuitem_view_render_menu), render_normal);
@@ -610,19 +601,19 @@ interface_create_gui (int req_width, int req_height)
 		menu_view_render_group = gtk_radio_menu_item_get_group (GTK_RADIO_MENU_ITEM (render_hq));
 		gtk_container_add (GTK_CONTAINER (menuitem_view_render_menu), render_hq);
 
-		screen.win.menu_view_render_group = malloc(4*sizeof(GtkWidget *));
+		screen.win.menu_view_render_group = malloc(4 * sizeof(GtkWidget *));
 		if(screen.win.menu_view_render_group == NULL)
 			GERB_FATAL_ERROR("malloc for rendering type synchronization failed.\n");
 
-		screen.win.menu_view_render_group[GERBV_RENDER_TYPE_GDK] = GTK_CHECK_MENU_ITEM(render_fast);
-		screen.win.menu_view_render_group[GERBV_RENDER_TYPE_GDK_XOR] = GTK_CHECK_MENU_ITEM(render_fast_xor);
+		screen.win.menu_view_render_group[GERBV_RENDER_TYPE_GDK] = NULL;
+		screen.win.menu_view_render_group[GERBV_RENDER_TYPE_GDK_XOR] = NULL;
 		screen.win.menu_view_render_group[GERBV_RENDER_TYPE_CAIRO_NORMAL] = GTK_CHECK_MENU_ITEM(render_normal);
 		screen.win.menu_view_render_group[GERBV_RENDER_TYPE_CAIRO_HIGH_QUALITY] = GTK_CHECK_MENU_ITEM(render_hq);
+
+		gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (render_normal), TRUE);
 	}
 
 	{	// units submenu
-		gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (render_fast), TRUE);
-
 		menuitem_view_unit = gtk_menu_item_new_with_mnemonic (_("U_nits"));
 		gtk_container_add (GTK_CONTAINER (menuitem_view_menu), menuitem_view_unit);
 
@@ -932,12 +923,10 @@ interface_create_gui (int req_width, int req_height)
 	render_combobox = gtk_combo_box_new_text ();
 	gtk_box_pack_start (GTK_BOX (hbox4), render_combobox, TRUE, TRUE, 0);
 
-	gtk_combo_box_append_text (GTK_COMBO_BOX (render_combobox), _("Fast"));
-	gtk_combo_box_append_text (GTK_COMBO_BOX (render_combobox), _("Fast, with XOR"));
 	gtk_combo_box_append_text (GTK_COMBO_BOX (render_combobox), _("Normal"));
 	gtk_combo_box_append_text (GTK_COMBO_BOX (render_combobox), _("High quality"));
-	if (screenRenderInfo.renderType < GERBV_RENDER_TYPE_MAX)
-	    gtk_combo_box_set_active (GTK_COMBO_BOX (render_combobox), screenRenderInfo.renderType);
+	if (screenRenderInfo.renderType >= GERBV_RENDER_TYPE_CAIRO_NORMAL && screenRenderInfo.renderType < GERBV_RENDER_TYPE_MAX)
+	    gtk_combo_box_set_active (GTK_COMBO_BOX (render_combobox), screenRenderInfo.renderType - GERBV_RENDER_TYPE_CAIRO_NORMAL);
 
 	scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
 	gtk_box_pack_start (GTK_BOX (vbox10), scrolledwindow1, TRUE, TRUE, 0);
@@ -1490,12 +1479,6 @@ interface_create_gui (int req_width, int req_height)
 
 	/* connect this signals as late as possible to avoid triggering them before
 	   the gui is drawn */
-	g_signal_connect ((gpointer) render_fast, "activate",
-	                  G_CALLBACK (callbacks_viewmenu_rendertype_changed),
-	                  GINT_TO_POINTER(GERBV_RENDER_TYPE_GDK));
-	g_signal_connect ((gpointer) render_fast_xor, "activate",
-	                  G_CALLBACK (callbacks_viewmenu_rendertype_changed),
-	                  GINT_TO_POINTER(GERBV_RENDER_TYPE_GDK_XOR));
 	g_signal_connect ((gpointer) render_normal, "activate",
 	                  G_CALLBACK (callbacks_viewmenu_rendertype_changed),
 	                  GINT_TO_POINTER(GERBV_RENDER_TYPE_CAIRO_NORMAL));
@@ -1513,7 +1496,7 @@ interface_create_gui (int req_width, int req_height)
 void 
 interface_set_render_type (int t)
 {
-	if (t >= GERBV_RENDER_TYPE_MAX)
+	if (t < GERBV_RENDER_TYPE_CAIRO_NORMAL || t >= GERBV_RENDER_TYPE_MAX)
 		return;
 
 	screenRenderInfo.renderType = t;
@@ -1524,7 +1507,7 @@ interface_set_render_type (int t)
 	if (!screen.win.sidepaneRenderComboBox)
 		return;
 
-	gtk_combo_box_set_active (GTK_COMBO_BOX (screen.win.sidepaneRenderComboBox), t);
+	gtk_combo_box_set_active (GTK_COMBO_BOX (screen.win.sidepaneRenderComboBox), t - GERBV_RENDER_TYPE_CAIRO_NORMAL);
 	gtk_check_menu_item_set_active (screen.win.menu_view_render_group[t], TRUE);
 }
 
