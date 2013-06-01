@@ -2748,9 +2748,8 @@ callbacks_delete_objects_clicked (GtkButton *button, gpointer   user_data){
 gboolean
 callbacks_drawingarea_configure_event (GtkWidget *widget, GdkEventConfigure *event)
 {
-	GdkDrawable *drawable = widget->window;
-	
-	gdk_drawable_get_size (drawable, &screenRenderInfo.displayWidth, &screenRenderInfo.displayHeight);
+	screenRenderInfo.displayWidth = gdk_window_get_width(gtk_widget_get_window(widget));
+	screenRenderInfo.displayHeight = gdk_window_get_height(gtk_widget_get_window(widget));
 
 	if (screen.windowSurface)
 		cairo_surface_destroy ((cairo_surface_t *)
