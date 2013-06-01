@@ -292,19 +292,10 @@ render_draw_selection_box_outline(void) {
 void
 render_draw_zoom_outline(gboolean centered)
 {
-	GdkGC *gc;
-	GdkGCValues values;
-	GdkGCValuesMask values_mask;
+        cairo_t *cr;
 	gint x1, y1, x2, y2, dx, dy;
+	gdouble x, y, w, h;
 
-	memset(&values, 0, sizeof(values));
-	values.function = GDK_XOR;
-	if (!screen.zoom_outline_color.pixel)
-	 	gdk_colormap_alloc_color(gdk_colormap_get_system(), &screen.zoom_outline_color, FALSE, TRUE);
-	values.foreground = screen.zoom_outline_color;
-	values_mask = GDK_GC_FUNCTION | GDK_GC_FOREGROUND;
-	gc = gdk_gc_new_with_values(screen.drawing_area->window, &values, values_mask);
-	
 	x1 = MIN(screen.start_x, screen.last_x);
 	y1 = MIN(screen.start_y, screen.last_y);
 	x2 = MAX(screen.start_x, screen.last_x);
@@ -322,32 +313,66 @@ render_draw_zoom_outline(gboolean centered)
 		y2 = y1+dy;
 	}
 
-	gdk_draw_rectangle(screen.drawing_area->window, gc, FALSE, x1, y1, dx, dy);
-	gdk_gc_unref(gc);
+        cr = gdk_cairo_create(screen.drawing_area->window);
 
-	/* Draw actual zoom area in dashed lines */
-	memset(&values, 0, sizeof(values));
-	values.function = GDK_XOR;
-	values.foreground = screen.zoom_outline_color;
-	values.line_style = GDK_LINE_ON_OFF_DASH;
-	values_mask = GDK_GC_FUNCTION | GDK_GC_FOREGROUND | GDK_GC_LINE_STYLE;
-	gc = gdk_gc_new_with_values(screen.drawing_area->window, &values,
-				values_mask);
-	
+	/* effective zoom region (dashed) */
+
 	if ((dy == 0) || ((double)dx/dy > (double)screen.drawing_area->allocation.width/
 				screen.drawing_area->allocation.height)) {
-		dy = dx * (double)screen.drawing_area->allocation.height/
-			screen.drawing_area->allocation.width;
+		h = rint(dx * (double)screen.drawing_area->allocation.height/
+			screen.drawing_area->allocation.width);
+		w = dx;
 	} 
 	else {
-		dx = dy * (double)screen.drawing_area->allocation.width/
-			screen.drawing_area->allocation.height;
+		w = rint(dy * (double)screen.drawing_area->allocation.width/
+			screen.drawing_area->allocation.height);
+		h = dy;
 	}
 
-	gdk_draw_rectangle(screen.drawing_area->window, gc, FALSE, (x1+x2-dx)/2,
-		(y1+y2-dy)/2, dx, dy);
+	x = (x1+x2-w)/2;
+	y = (y1+y2-h)/2;
+	choose_nearest_pixel(&x);
+	choose_nearest_pixel(&y);
 
-	gdk_gc_unref(gc);
+	if (w > 0)
+		w -= 1;
+	else
+		w = 0;
+	if (h > 0)
+		h -= 1;
+	else
+		h = 0;
+
+	{
+		double dash[] = { 3.0, 5.0 };
+		cairo_set_dash(cr, dash, 2, 3.0);
+	}
+	cairo_rectangle(cr, x, y, w, h);
+        stroke_tool(cr);
+	cairo_set_dash(cr, NULL, 0, 0.0);
+
+	/* zoom region as dragged by the mouse (solid) */
+
+	x = x1;
+	y = y1;
+	choose_nearest_pixel(&x);
+	choose_nearest_pixel(&y);
+
+	w = dx;
+	h = dy;
+	if (w > 0)
+		w -= 1;
+	else
+		w = 0;
+	if (h > 0)
+		h -= 1;
+	else
+		h = 0;
+
+	cairo_rectangle(cr, x, y, w, h);
+        stroke_tool(cr);
+
+        cairo_destroy(cr);
 }
 
 /* ------------------------------------------------------ */

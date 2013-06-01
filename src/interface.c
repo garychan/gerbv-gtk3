@@ -1443,13 +1443,11 @@ interface_create_gui (int req_width, int req_height)
 	 * Setup some GTK+ defaults.
 	 * These should really be somewhere else.
 	 */
-	GdkColor zoom_outline_color = {0, 50000, 50000, 50000};
 	GdkColor selection_color = {0, 65000, 65000, 65000};
 
 	gerbv_color_t tool_color = { 1.0, 1.0, 1.0, 0.8 };
 	gerbv_color_t tool_outline_color = { 0.0, 0.0, 0.0, 0.5 };
 	
-	screen.zoom_outline_color = zoom_outline_color;
 	screen.selection_color = selection_color;
 
 	screen.tool_color = tool_color;

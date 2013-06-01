@@ -3034,8 +3034,7 @@ callbacks_drawingarea_motion_notify_event (GtkWidget *widget, GdkEventMotion *ev
 		    break;
 		}
 		case IN_ZOOM_OUTLINE: {
-			if (screen.last_x || screen.last_y)
-				render_draw_zoom_outline(screen.centered_outline_zoom);
+			callbacks_force_expose_event_for_screen ();
 			screen.last_x = x;
 			screen.last_y = y;
 			render_draw_zoom_outline(screen.centered_outline_zoom);
