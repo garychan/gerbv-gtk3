@@ -25,7 +25,8 @@ dnl  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA
 AC_INIT([gerbv], [2.6A])
 AC_CONFIG_SRCDIR([libgerbv/gerbv.c])
 AC_PREREQ([2.59])
-AM_INIT_AUTOMAKE([1.9])
+AM_INIT_AUTOMAKE([foreign])
+AM_SILENT_RULES([yes])
 
 dnl Create a configuration header 
 AM_CONFIG_HEADER([config.h])
