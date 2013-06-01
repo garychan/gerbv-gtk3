@@ -1553,7 +1553,7 @@ callbacks_about_activate                     (GtkMenuItem     *menuitem,
 	aboutdialog1 = gtk_about_dialog_new ();
 	gtk_container_set_border_width (GTK_CONTAINER (aboutdialog1), 5);
 	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG (aboutdialog1), VERSION);
-	gtk_about_dialog_set_name (GTK_ABOUT_DIALOG (aboutdialog1), _("Gerbv"));
+	gtk_about_dialog_set_program_name (GTK_ABOUT_DIALOG (aboutdialog1), _("Gerbv"));
 
 	/* gtk_about_dialog_set_translator_credits (GTK_ABOUT_DIALOG (aboutdialog1), translators); */
 	gtk_about_dialog_set_comments (GTK_ABOUT_DIALOG (aboutdialog1), string);
