@@ -53,7 +53,7 @@
 #include "icons.h"
 extern gerbv_render_info_t screenRenderInfo;
 
-#define WIN_TITLE "Gerbv -- gEDA's Gerber Viewer"
+#define WIN_TITLE "Gerber Viewer"
 #define _(String) (String)
 
 #define dprintf if(DEBUG) printf
@@ -70,7 +70,12 @@ rename_main_window(char const* filename, GtkWidget *main_win)
 
 	g_assert(win != NULL);
 
-	g_string_printf (win_title,"%s version %s: %s", WIN_TITLE, VERSION, filename);
+	if (strlen(filename)) {
+		g_string_printf (win_title,"%s - %s", filename, WIN_TITLE);
+	}
+	else {
+		g_string_printf (win_title,"%s", WIN_TITLE);
+	}
 	gtk_window_set_title(GTK_WINDOW(win), win_title->str);
 	g_string_free(win_title,TRUE);			 
 }
