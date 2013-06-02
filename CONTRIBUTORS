@@ -89,3 +89,6 @@ Richard Lightman
  - Found a bug in handling negative image polarity in combination with
    layer polarity and sent in a patch for that.
 
+Colin Leitner
+ - Ported gerbv to Gtk3
+
