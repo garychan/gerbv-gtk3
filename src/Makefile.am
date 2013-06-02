@@ -82,7 +82,11 @@ SCMSUBDIR = scheme
 scmdatadir = $(pkgdatadir)/${SCMSUBDIR}/
 dist_scmdata_DATA = init.scm
 
-AM_CFLAGS= -DBACKEND_DIR='"$(scmdatadir)"' -DSCMSUBDIR='"$(SCMSUBDIR)"'
+uidir = $(pkgdatadir)/ui/
+dist_ui_DATA = \
+	modify-orientation-dialog.ui
+
+AM_CFLAGS= -DBACKEND_DIR='"$(scmdatadir)"' -DSCMSUBDIR='"$(SCMSUBDIR)"' -DUIDIR='"$(pkgdatadir)/ui"'
 
 all-local: run_gerbv
 # create wrapper script that lets you test gerbv prior to installation
