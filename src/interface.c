@@ -1019,40 +1019,36 @@ interface_create_gui (int req_width, int req_height)
 	gtk_paned_pack2 (GTK_PANED (hpaned1), vbox2, TRUE, FALSE);
 	gtk_container_set_border_width (GTK_CONTAINER (vbox2), 4);
 	
-	main_view_table = gtk_table_new (3, 3, FALSE);
+	main_view_table = gtk_grid_new ();
 	gtk_box_pack_start (GTK_BOX (vbox2), main_view_table, TRUE, TRUE, 0);
 
 	hRuler = gimp_ruler_new (GTK_ORIENTATION_HORIZONTAL);
-	gtk_table_attach (GTK_TABLE (main_view_table), hRuler, 1, 2, 0, 1,
-	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-	                  (GtkAttachOptions) (GTK_FILL), 0, 0);
+	gtk_grid_attach (GTK_GRID (main_view_table), hRuler, 1, 0, 1, 1);
+	gtk_widget_set_hexpand (GTK_WIDGET(hRuler), TRUE);
 	gimp_ruler_set_range (GIMP_RULER (hRuler), 0, 100, 1000);
 	gimp_ruler_set_position (GIMP_RULER (hRuler), 8.56051);
 
 	vRuler = gimp_ruler_new (GTK_ORIENTATION_VERTICAL);
-	gtk_table_attach (GTK_TABLE (main_view_table), vRuler, 0, 1, 1, 2,
-	                  (GtkAttachOptions) (GTK_FILL),
-	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
+	gtk_grid_attach (GTK_GRID (main_view_table), vRuler, 0, 1, 1, 1);
+	gtk_widget_set_vexpand (GTK_WIDGET(vRuler), TRUE);
 	gimp_ruler_set_range (GIMP_RULER (vRuler), 0, 100, 1000);
 	gimp_ruler_set_position (GIMP_RULER (vRuler), 8.37341);
 
 	drawingarea = gtk_drawing_area_new();
-	gtk_table_attach (GTK_TABLE (main_view_table), drawingarea, 1, 2, 1, 2,
-	                  (GtkAttachOptions) (GTK_FILL),
-	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
+	gtk_grid_attach (GTK_GRID (main_view_table), drawingarea, 1, 1, 1, 1);
+	gtk_widget_set_hexpand (GTK_WIDGET(drawingarea), TRUE);
+	gtk_widget_set_vexpand (GTK_WIDGET(drawingarea), TRUE);
 	
 	hAdjustment = (GtkWidget *) gtk_adjustment_new (0.0, -1000.0, 1000.0, 1000.0, 1000.0, 500.0);
 	vAdjustment = (GtkWidget *) gtk_adjustment_new (0.0, -1000.0, 1000.0, 1000.0, 1000.0, 500.0);
 	
 	hScrollbar = gtk_scrollbar_new (GTK_ORIENTATION_HORIZONTAL, GTK_ADJUSTMENT (hAdjustment));
-	gtk_table_attach (GTK_TABLE (main_view_table), hScrollbar, 1, 2, 2, 3,
-	                  (GtkAttachOptions) (GTK_FILL),
-	                  (GtkAttachOptions) (GTK_FILL), 0, 0);
+	gtk_grid_attach (GTK_GRID (main_view_table), hScrollbar, 1, 2, 1, 1);
+	gtk_widget_set_hexpand (GTK_WIDGET(hScrollbar), TRUE);
 	                  
 	vScrollbar = gtk_scrollbar_new (GTK_ORIENTATION_VERTICAL, GTK_ADJUSTMENT (vAdjustment));
-	gtk_table_attach (GTK_TABLE (main_view_table), vScrollbar, 2, 3, 1, 2,
-	                  (GtkAttachOptions) (GTK_FILL),
-	                  (GtkAttachOptions) (GTK_FILL), 0, 0);
+	gtk_grid_attach (GTK_GRID (main_view_table), vScrollbar, 2, 1, 1, 1);
+	gtk_widget_set_vexpand (GTK_WIDGET(vScrollbar), TRUE);
 	
 	hbox5 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 10);
 	gtk_box_pack_start (GTK_BOX (vbox2), hbox5, FALSE, FALSE, 0);
